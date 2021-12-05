@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Biller</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        table,th,td{
+            border: 1px solid black;
+            margin: 8px;
+        }
+        #result-div, #bill-form{
+            width: max-content;
+            margin: 0 auto;
+            display: block;
+        }
+        #bill-form{
+            margin-top: 100px;
+        }
+        button{
+            margin: 0 auto;
+            display: block;
+            border-radius: 4px;
+        }
+        #result{
+            margin-top: 20px;
+            border: 1px solid grey;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+	<div id="bill-form">
+        <table>
+            <caption>Milk Biller</caption>
+            <tbody>
+                <tr>
+                    <th>Select Dairy</th>
+                    <td><input type="radio" id="milk-seller-lakshmi-sai">Lakshmi Sai Diary</td>
+                </tr>
+                <tr>
+                    <th>Select Date</th>
+                    <td>
+                        <input type="date" id="date"></br>
+                        <select id="am-pm">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Enter Weights</th>
+                    <td><textarea id="weights"></textarea></td>
+                </tr>
+                <tr>
+                    <th>Enter Cans weight</th>
+                    <td><input type="number" id="can-weight"></td>
+                </tr>
+                <tr>
+                    <th>Enter Milk rate</th>
+                    <td><input type="number" id="milk-price"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button onclick="calculateResult();">Submit</button></td>
+                </tr>
+            </tbody>
+        </table>
+	</div>
+	<div style="display: none;" id="result-div">
+        <div id="result"></div></br>
+		<button id="whatsapp-send" style="background-color: aliceblue;"><i class="fa fa-whatsapp"></i></button>
+	</div>
+    <script>
+        var textarea = document.getElementById('weights');
+        var heightLimit = 200;
+        textarea.oninput = function(){
+            textarea.style.height = "";
+            textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
+        }
+        function calculateResult() {
+            var weights = document.getElementById('weights');
+            var result = document.getElementById('result');
+            var resultText = weights.value;
+            result.innerHTML = alignBill(resultText);
+            document.getElementById('result-div').style.display = 'block';
+            result.readOnly = "true";
+        }
+
+        function computeTotal(quantities) {
+            var weights = quantities.split('\n');
+            let sum = 0;
+            for (let i = 0; i < weights.length; i++) {
+                sum += parseFloat(weights[i]);
+            }
+            return sum.toFixed(3);
+        }
+
+        function alignBill(quantities){
+            let bill = computeTotal(quantities);
+            let milk_rate = parseFloat(document.getElementById('milk-price').value);
+            let canWeight = parseFloat(document.getElementById('can-weight').value).toFixed(3);
+            var dairy = document.getElementById('milk-seller-lakshmi-sai');
+            var dairyName = "";
+            let weight = parseFloat(bill-canWeight).toFixed(3);
+            let totalAmount = parseFloat(weight*milk_rate).toFixed(0);
+            totalAmount = Intl.NumberFormat('en-IN').format(totalAmount);
+            var date = document.getElementById('date').value;
+            date = new Date(date).toLocaleDateString("en-GB");
+            var am_pm = document.getElementById('am-pm').value;
+            if(dairy.checked){
+                dairyName = "Lakshmi Sai Dairy, Atmakur";
+            }
+            var weights = quantities.split('\n');
+            var weightsString = "";
+            var weightsString1 = "";
+            for(let i=0;i<weights.length;i++){
+                weightsString+=weights[i]+"%0A";
+                weightsString1+=weights[i]+"</br>";
+            }
+            var result_wa = "*"+dairyName+"*%0A*Date*: "+date+" _("+am_pm+")_%0A%0A"+weightsString+"————————%0A*"+bill+"*%0A"+"– _"+canWeight+"_(Empty Cans)%0A——————————%0A_*"+weight+"*_ × "+milk_rate+"%0A———————%0A*₹ "+totalAmount+"/-*";
+            var result_div = "<b>"+dairyName+"</b></br><b>Date</b>: "+date+" <i>("+am_pm+")</i></br></br>"+weightsString1+"-------------</br><b>"+bill+"</b></br>"+"– <i>"+canWeight+"</b> <i>(Empty Cans)</i></br>-------------</br>"+weight+" × "+milk_rate+"</br>-------------</br><b>₹ "+totalAmount+"/-</b>";
+            document.getElementById('whatsapp-send').addEventListener('click',()=>{
+                window.location.href = createWhatsAppLink(result_wa);
+            });
+            return result_div;
+        }
+
+        function createWhatsAppLink(message){
+            return "whatsapp://send?text="+message;
+        }
+    </script>
+</body>
+
+</html>
