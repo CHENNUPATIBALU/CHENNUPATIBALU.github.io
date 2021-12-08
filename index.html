@@ -36,6 +36,10 @@
 </head>
 
 <body>
+				<div style="width: max-content;margin: 0 auto;display:block">
+								<input type="number" id="number" placeholder="Enter mobile number"><br><br>
+								<button onclick="openWhatsapp(document.getElementById('number').value);">Open WhatsApp</button>
+				</div>
 	<div id="bill-form">
         <table>
             <caption>Milk Biller</caption>
@@ -78,6 +82,9 @@
 		<button id="whatsapp-send" style="background-color: aliceblue;"><i class="fa fa-whatsapp"></i></button>
 	</div>
     <script>
+    				function openWhatsapp(number){
+    								window.location.href="api.whatsapp.com/send?phone=+91"+number;
+    				}
     				if(localStorage.getItem("result_div")!=null && localStorage.getItem("wa")!=null){
     								var div = document.getElementById('result');
     								document.getElementById("result-div").style.display = 'block';
