@@ -24,10 +24,11 @@
       }
 
       #bill-form {
-        margin-top: 100px;
+        margin-top: 20px;
       }
 
-      button {
+      #whatsapp-send,
+      .bill-btn {
         margin: 0 auto;
         display: block;
         border-radius: 4px;
@@ -42,6 +43,11 @@
       .fa-whatsapp {
         font-size: 30px;
       }
+
+      #manage-div {
+        padding: 10px;
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -49,64 +55,122 @@
       <input type="number" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
       <br>
       <br>
-      <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;">Open WhatsApp</button>
+      <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="bill-btn">Open WhatsApp</button>
     </div>
-    <div id="bill-form">
-      <table>
-        <caption>Milk Biller</caption>
-        <tbody>
-          <tr>
-            <th>Select Dairy</th>
-            <td>
-              <input type="radio" id="milk-seller-lakshmi-sai">Lakshmi Sai Diary
-            </td>
-          </tr>
-          <tr>
-            <th>Select Date</th>
-            <td>
-              <input type="date" id="date">
-              </br>
-              <select id="am-pm">
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <th>Enter Weights</th>
-            <td>
-              <textarea id="weights"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th>Enter Cans weight</th>
-            <td>
-              <input type="number" id="can-weight">
-            </td>
-          </tr>
-          <tr>
-            <th>Enter Milk rate</th>
-            <td>
-              <input type="number" id="milk-price">
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <button onclick="calculateResult();">Submit</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="display: none;" id="result-div">
-      <div id="result"></div>
-      </br>
-      <button id="whatsapp-send" style="background-color: aliceblue;">
-        <i class="fa fa-whatsapp"></i>
-      </button>
+    <br>
+    <div>
+      <button onclick="openBiller();">Biller</button>
+      <button onclick="openManage();">Manage</button>
+      <div style="border: 1px solid grey; padding: 10px;">
+        <div id="manage-div">
+          <div id="date-range-div">
+            <p>
+              <b>Start date</b>: <input type="date" id="start-date">
+            </p>
+            <p>
+              <b>End date</b>: <input type="date" id="end-date">
+            </p>
+            <button onclick="getDetails();">Get</button>
+          </div>
+          <br>
+          <div style="border: 1px solid grey;" id="manage-details-div">
+            <p>
+              <b>No. of days: </b>
+              <span id="days_work_done"></span>
+            </p>
+            <p>
+              <b>Total Cans: </b>
+              <span id="total-cans"></span>
+            </p>
+            <p>
+              <b>Total Amount spent: </b>
+              <span id="total-amount"></span>
+            </p>
+          </div>
+        </div>
+        <div id="bill-form">
+          <table>
+            <caption>Milk Biller</caption>
+            <tbody>
+              <tr>
+                <th>Select Dairy</th>
+                <td>
+                  <input type="radio" id="milk-seller-lakshmi-sai">Lakshmi Sai Diary
+                </td>
+              </tr>
+              <tr>
+                <th>Select Date</th>
+                <td>
+                  <input type="date" id="date">
+                  </br>
+                  <select id="am-pm">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>Enter Weights</th>
+                <td>
+                  <textarea id="weights"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th>Enter Cans weight</th>
+                <td>
+                  <input type="number" id="can-weight">
+                </td>
+              </tr>
+              <tr>
+                <th>Enter Milk rate</th>
+                <td>
+                  <input type="number" id="milk-price">
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <button onclick="calculateResult();" class="bill-btn">Submit</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display: none;" id="result-div">
+          <div id="result"></div>
+          </br>
+          <button id="whatsapp-send" style="background-color: aliceblue;">
+            <i class="fa fa-whatsapp"></i>
+          </button>
+        </div>
+      </div>
     </div>
     <script>
+      function getDetails() {
+        var db = firebase.firestore();
+        var startDate = document.getElementById('start-date').value;
+        var endDate = document.getElementById('end-date').value;
+        db.collection("Milk Biller").where("Date", ">=", startDate).where("Date", "<=", endDate).get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            console.log(doc.id, " => ", doc.data().Total_Bill);
+          });
+        }).catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+      }
+
+      function openBiller() {
+        document.getElementById('bill-form').style.display = 'block';
+        document.getElementById('manage-div').style.display = 'none';
+        document.getElementById('result-div').style.display = 'block';
+      }
+
+      function openManage() {
+        document.getElementById('bill-form').style.display = 'none';
+        document.getElementById('manage-div').style.display = 'block';
+        document.getElementById('result-div').style.display = 'block';
+      }
+
       function openWhatsapp(number) {
         window.location.href = "https://api.whatsapp.com/send?phone=+91" + number;
       }
@@ -166,7 +230,7 @@
           weightsString1 += weights[i] + " < /br>";
         }
         var result_wa = "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_(Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
-        var result_div = " <b> "+dairyName+" </b> </br> <b> Date </b>: "+date+"  <i> ("+am_pm+") </i> </br> < /br>"+weightsString1+"------------- </br> <b> "+bill+" </b> </br>"+"–  <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>------------- </br>"+weight+" × "+milk_rate+" </br>------------- </br> <b> ₹"+totalAmount+" / - </b>";
+        var result_div = "  < b > "+dairyName+" < /b> < /br> < b > Date < /b>: "+date+"   < i > ("+am_pm+") < /i> < /br>< /br > "+weightsString1+"-- -- -- -- -- -- - < /br> < b > "+bill+" < /b> < /br>"+"–   < i > "+canWeight+" < /b> < i > (Empty Cans) < /i> < /br>-------------  < /br>"+weight+" × "+milk_rate+"  < /br>-------------  < /br> < b > ₹"+totalAmount+" / - < /b>";
         addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
         addToLS(result_div, result_wa);
         document.getElementById('whatsapp-send').addEventListener('click', () => {
