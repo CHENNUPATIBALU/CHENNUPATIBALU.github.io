@@ -230,7 +230,7 @@
           weightsString1 += weights[i] + " < /br>";
         }
         var result_wa = "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_(Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
-        var result_div = "  < b > "+dairyName+" < /b> < /br> < b > Date < /b>: "+date+"   < i > ("+am_pm+") < /i> < /br>< /br > "+weightsString1+"-- -- -- -- -- -- - < /br> < b > "+bill+" < /b> < /br>"+"–   < i > "+canWeight+" < /b> < i > (Empty Cans) < /i> < /br>-------------  < /br>"+weight+" × "+milk_rate+"  < /br>-------------  < /br> < b > ₹"+totalAmount+" / - < /b>";
+        var result_div = " <b> "+dairyName+" </b> </br> <b> Date </b>: "+date+"  <i> ("+am_pm+") </i> </br> < /br>"+weightsString1+"------------- </br> <b> "+bill+" </b> </br>"+"–  <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>------------- </br>"+weight+" × "+milk_rate+" </br>------------- </br> <b> ₹"+totalAmount+" / - </b>";
         addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
         addToLS(result_div, result_wa);
         document.getElementById('whatsapp-send').addEventListener('click', () => {
