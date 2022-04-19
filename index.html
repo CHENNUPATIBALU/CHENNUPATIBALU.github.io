@@ -47,6 +47,21 @@
       				padding: 10px;
       				display: none;
       }
+      
+      #manage-btn,#biller-btn{
+          border: 1px solid black;
+      }
+      
+      #biller-btn{
+          background-color: white;
+          border-bottom: none;
+      }
+      
+      #manage-btn{
+          border-bottom:none;
+          background-color: grey;
+          color: white;
+      }
     </style>
   </head>
   <body>
@@ -58,8 +73,8 @@
     </div>
     <br>
   				<div>
-  								<button onclick="openBiller();">Biller</button>
-  								<button onclick="openManage();">Manage</button>
+  								<button onclick="openBiller();" id="biller-btn">Biller</button>
+  								<button onclick="openManage();" id="manage-btn">Manage</button>
   								<div style="border: 1px solid grey; padding: 10px;">
   												<div id="manage-div">
   															<div id="date-range-div">
@@ -166,12 +181,17 @@
     								document.getElementById('bill-form').style.display = 'block';
     								document.getElementById('manage-div').style.display = 'none';
     								document.getElementById('result-div').style.display = 'block';
+    								
+    								document.getElementById('manage-btn').style = "background-color: grey; color: white; border-bottom: none;";
+    								document.getElementById('biller-btn').style = "background-color: white; border-bottom: none;";
     				}
     				
     				function openManage(){
     								document.getElementById('bill-form').style.display = 'none';
     								document.getElementById('manage-div').style.display = 'block';
     								document.getElementById('result-div').style.display = 'block';
+    								document.getElementById('biller-btn').style = "background-color: grey; color: white; border-bottom: none;";
+    								document.getElementById('manage-btn').style = "background-color: white; border-bottom: none; color: black;";
     				}
     				
       function openWhatsapp(number) {
