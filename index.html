@@ -86,6 +86,11 @@
           padding: 10px;
           font-size: 15px;
       }
+      
+      #login-progress{
+          margin: 0 auto;
+          display: none;
+      }
     </style>
   </head>
   <body>
@@ -94,7 +99,8 @@
               <h3 style="text-align: center;">Login</h3>
               <input type="email" placeholder="Email*" id="email"><br>
               <input type="password" placeholder="Password*" id="password"><br>
-              <button onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button>
+              <button onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button><br>
+              <progress id="login-progress"></progress>
           </div>
       </div>
       <div id="main-div">
@@ -189,9 +195,7 @@
         }        
         
         function login(){
-            if(sessionStorage.getItem("login-status")==null){
-            showLoginDiv(true);
-            showMainDiv(false);
+            document.getElementById('login-progress').style.display = "block";
             email = document.getElementById('email').value;
             password = document.getElementById('password').value;
                 firebase.auth().signInWithEmailAndPassword(email, password)
@@ -199,6 +203,7 @@
     // Signed in
     var user = userCredential.user;
     showLoginDiv(false);
+    document.getElementById('login-progress').style.display = "none";
     showMainDiv(true);
     sessionStorage.setItem('login-status',true);
     // ...
@@ -206,12 +211,9 @@
   .catch((error) => {
     var errorCode = error.code;
     var errorMessage = error.message;
+    document.getElementById('login-progress').style.display = "none";
     alert('You are not allowed to sign in. Kindly contact SVRMP about this error.');
   });
-            }else{
-                showLoginDiv(false);
-                showMainDiv(true);
-            }
         }
         
         function showLoginDiv(show){
@@ -335,14 +337,22 @@
           weightsString += weights[i] + "%0A";
           weightsString1 += weights[i] + " </br>";
         }
-        var result_wa = "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_(Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
-        var result_div = "<b>"+dairyName+"</b></br><b>Date</b>: "+date+"<i>("+am_pm+") </i> </br> </br>"+weightsString1+"------------- </br> <b> "+bill+" </b> </br>"+"–  <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>------------- </br>"+weight+" × "+milk_rate+" </br>------------- </br> <b> ₹"+totalAmount+" / - </b>";
+        var result_wa = createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount);
+        var result_div = createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount);
         addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
         addToLS(result_div, result_wa);
         document.getElementById('whatsapp-send').addEventListener('click', () => {
           window.location.href = createWhatsAppLink(result_wa);
         });
         return result_div;
+      }
+      
+      function createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount){
+          return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_(Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
+      }
+      
+      function createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount){
+          return "<b>"+dairyName+"</b></br><b>Date</b>: "+date+"<i>("+am_pm+") </i> </br> </br>"+weightsString1+"------------- </br> <b> "+bill+" </b> </br>"+"–  <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>------------- </br>"+weight+" × "+milk_rate+" </br>------------- </br> <b> ₹"+totalAmount+" / - </b>";
       }
 
       function createWhatsAppLink(message) {
