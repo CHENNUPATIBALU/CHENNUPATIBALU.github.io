@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <style>
       table,
@@ -62,10 +63,42 @@
           background-color: grey;
           color: white;
       }
+      
+      #main-div{
+          display: none;
+      }
+      
+      #login-div{
+          margin-top: 50%;
+      }
+      
+      #login-div input{
+          margin: 5px;
+          height: 40px;
+          font-size: 18px;
+      }
+      
+      h3{
+          font-size: 40px;
+      }
+      
+      #login-div button{
+          padding: 10px;
+          font-size: 15px;
+      }
     </style>
   </head>
   <body>
-  				<div style="width: max-content;margin: 0 auto;display:block">
+      <div id="login-div">
+          <div style="width: max-content; margin: 0 auto;">
+              <h3 style="text-align: center;">Login</h3>
+              <input type="email" placeholder="Email*" id="email"><br>
+              <input type="password" placeholder="Password*" id="password"><br>
+              <button onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button>
+          </div>
+      </div>
+      <div id="main-div">
+          <div style="width: max-content;margin: 0 auto;display:block">
       <input type="number" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
       <br>
       <br>
@@ -147,6 +180,55 @@
   								</div>
   				</div>
     <script>
+        if(sessionStorage.getItem('login-status')==null || sessionStorage.getItem('login-status')==false){
+            showLoginDiv(true);
+            showMainDiv(false);
+        }else{
+            showLoginDiv(false);
+            showMainDiv(true);
+        }        
+        
+        function login(){
+            if(sessionStorage.getItem("login-status")==null){
+            showLoginDiv(true);
+            showMainDiv(false);
+            email = document.getElementById('email').value;
+            password = document.getElementById('password').value;
+                firebase.auth().signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    // Signed in
+    var user = userCredential.user;
+    showLoginDiv(false);
+    showMainDiv(true);
+    sessionStorage.setItem('login-status',true);
+    // ...
+  })
+  .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+  });
+            }else{
+                showLoginDiv(false);
+                showMainDiv(true);
+            }
+        }
+        
+        function showLoginDiv(show){
+            if(show){
+                document.getElementById('login-div').style.display = "block";
+            }else{
+                document.getElementById('login-div').style.display = "none";
+            }
+        }
+        
+        function showMainDiv(show){
+            if(show){
+                document.getElementById('main-div').style.display = "block";
+            }else{
+                document.getElementById('main-div').style.display = "none";
+            }
+        }
+        
         no_of_days = parseInt(0);
         amount_spent = parseInt(0);
         total_cans = parseInt(0);
@@ -305,5 +387,6 @@
       }
       initDB();
     </script>
+      </div>
   </body>
 </html>
