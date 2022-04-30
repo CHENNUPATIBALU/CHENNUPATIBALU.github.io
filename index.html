@@ -337,7 +337,7 @@
           weightsString += weights[i] + "%0A";
           weightsString1 += weights[i] + " </br>";
         }
-        var result_wa = createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount);
+        var result_wa = createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount,bill,milk_rate);
         var result_div = createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount);
         addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
         addToLS(result_div, result_wa);
@@ -347,7 +347,7 @@
         return result_div;
       }
       
-      function createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount){
+      function createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount,bill,milk_rate){
           return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_(Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
       }
       
