@@ -133,6 +133,7 @@
   												<div style="border: 1px solid grey;" id="manage-details-div">
   																<p><b>No. of days: </b><span id="days_work_done"></span></p>
   																<p><b>Total Cans: </b><span id="total-cans"></span></p>
+  																<p><b>Total Milk (in litres): </b><span id="total-cans-weight"></span></p>
   																<p><b>Total Amount spent: </b><span id="total-amount"></span></p>
   												</div>
   												</div>
@@ -243,6 +244,7 @@
         no_of_days = parseInt(0);
         amount_spent = parseInt(0);
         total_cans = parseInt(0);
+        total_cans_weight = parseInt(0);
     				function getDetails(){
     								var db = firebase.firestore();
     								var startDate = document.getElementById('start-date').value;
@@ -259,11 +261,17 @@
             no_of_days++;
            amount = doc.data().Total_Bill.split(','); amount_spent+=parseInt(amount[0]+''+amount[1]);
             total_cans+=doc.data().Cans_Count;
+            total_cans_weight+=parseFloat(doc.data().Bill_Without_Can_Weight)-parseFloat(doc.data().Can_Weight);
         });
         document.getElementById('get-progress').style.display = 'none';
         document.getElementById('days_work_done').innerText = no_of_days;
             document.getElementById('total-cans').innerText = total_cans;
+            document.getElementById('total-cans-weight').innerText = Intl.NumberFormat('en-IN').format(total_cans_weight);
             document.getElementById('total-amount').innerText = "₹ "+Intl.NumberFormat('en-IN').format(amount_spent)+"/-";
+        no_of_days = parseInt(0);
+        amount_spent = parseInt(0);
+        total_cans = parseInt(0);
+        total_cans_weight = parseInt(0);
     })
     .catch((error) => {
         console.log("Error getting documents: ", error);
@@ -356,7 +364,7 @@
       }
       
       function createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount,bill,milk_rate){
-          return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_(Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
+          return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_ (Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
       }
       
       function createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount){
