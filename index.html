@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
       table,
       th,
@@ -18,9 +18,14 @@
         border: 1px solid black;
         margin: 8px;
       }
-      
-      body{
-          font-family: 'Roboto', sans-serif;
+
+      th{
+        background-color: rgb(248, 129, 45);
+        color: white;
+      }
+
+      body {
+        font-family: 'Roboto', sans-serif;
       }
 
       #result-div,
@@ -34,9 +39,12 @@
         margin-top: 20px;
       }
 
-      #whatsapp-send, .bill-btn {
+      #whatsapp-send,
+      .bill-btn {
         margin: 0 auto;
         display: block;
+        cursor: pointer;
+        border: 0.5px solid black;
         border-radius: 4px;
       }
 
@@ -49,371 +57,472 @@
       .fa-whatsapp {
         font-size: 30px;
       }
-      
-      #manage-div{
-      		padding: 10px;
-      		display: none;
+
+      #manage-div {
+        padding: 10px;
+        display: none;
       }
-      
-      #manage-btn,#biller-btn{
-          border: 1px solid black;
+
+      #manage-btn,
+      #biller-btn {
+        border: 1px solid black;
+        cursor: pointer;
+        padding: 10px;
       }
-      
-      #biller-btn{
-          background-color: white;
-          border-bottom: none;
+
+      #biller-btn {
+        background-color: white;
+        border-bottom: none;
       }
-      
-      #manage-btn{
-          border-bottom:none;
-          background-color: grey;
-          color: white;
+
+      #manage-btn {
+        border-bottom: none;
+        background-color: grey;
+        color: white;
       }
-      
-      #main-div{
-          display: none;
+
+      #main-div {
+        display: none;
       }
-      
-      #login-div{
-          margin-top: 15%;
+
+      #login-div {
+        margin-top: 15%;
       }
-      
-      #login-div input{
-          margin: 5px;
-          height: 40px;
-          font-size: 18px;
+
+      #login-div input {
+        margin: 5px;
+        height: 40px;
+        font-size: 18px;
       }
-      
-      h3{
-          font-size: 40px;
-          font-family: 'Roboto', sans-serif;
+
+      h3 {
+        font-size: 40px;
+        font-family: 'Roboto', sans-serif;
       }
-      
-      #login-div button{
-          padding: 10px;
-          font-size: 15px;
-          font-family: 'Roboto', sans-serif;
+
+      #login-div button {
+        padding: 10px;
+        font-size: 15px;
+        font-family: 'Roboto', sans-serif;
       }
-      
-      #login-progress{
-          margin: 0 auto;
-          display: none;
+
+      #login-progress {
+        margin: 0 auto;
+        display: none;
+      }
+
+      input,textarea,select{
+        width: inherit;
+        height: 20px;
       }
     </style>
   </head>
   <body>
-      <div id="login-div">
-          <div style="width: max-content; margin: 0 auto;">
-              <h3 style="text-align: center;">Login</h3>
-              <input type="email" placeholder="Email*" id="email"><br>
-              <input type="password" placeholder="Password*" id="password"><br>
-              <button onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button><br>
-              <progress id="login-progress"></progress>
+    <div id="login-div">
+      <div style="width: max-content; margin: 0 auto;">
+        <h3 style="text-align: center;">Login</h3>
+        <input type="email" placeholder="Email*" id="email">
+        <br>
+        <input type="password" placeholder="Password*" id="password">
+        <br>
+        <button onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button>
+        <br>
+        <progress id="login-progress"></progress>
+      </div>
+    </div>
+    <div id="main-div">
+      <div style="width: max-content;margin: 0 auto;display:block">
+        <input type="number" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
+        <br>
+        <br>
+        <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="bill-btn">Open WhatsApp</button>
+      </div>
+      <br>
+      <div>
+        <button onclick="openBiller();" id="biller-btn">Biller</button>
+        <button onclick="openManage();" id="manage-btn">Manage</button>
+        <div style="border: 1px solid grey; padding: 10px;">
+          <div id="manage-div">
+            <div id="date-range-div">
+              <p>
+                <b>Start date</b>: <input type="date" id="start-date">
+              </p>
+              <p>
+                <b>End date</b>: <input type="date" id="end-date">
+              </p>
+              <button onclick="getDetails();" style="padding: 10px; font-size: large;">Get</button>
+              <progress id="get-progress" style="display:none;"></progress>
+            </div>
+            <br>
+            <div style="border: 1px solid grey;" id="manage-details-div">
+              <p>
+                <b>No. of days: </b>
+                <span id="days_work_done"></span>
+              </p>
+              <p>
+                <b>Total Cans: </b>
+                <span id="total-cans"></span>
+              </p>
+              <p>
+                <b>Total Milk (in litres): </b>
+                <span id="total-cans-weight"></span>
+              </p>
+              <p>
+                <b>Total Amount spent: </b>
+                <span id="total-amount"></span>
+              </p>
+            </div>
           </div>
-      </div>
-      <div id="main-div">
-          <div style="width: max-content;margin: 0 auto;display:block">
-      <input type="number" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
-      <br>
-      <br>
-      <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="bill-btn">Open WhatsApp</button>
-    </div>
-    <br>
-  				<div>
-  								<button onclick="openBiller();" id="biller-btn">Biller</button>
-  								<button onclick="openManage();" id="manage-btn">Manage</button>
-  								<div style="border: 1px solid grey; padding: 10px;">
-  												<div id="manage-div">
-  															<div id="date-range-div">
-  																<p><b>Start date</b>: <input type="date" id="start-date"></p>
-  																<p><b>End date</b>: <input type="date" id="end-date"></p>
-  																<button onclick="getDetails();" style="padding: 10px; font-size: large;">Get</button>
-  																<progress id="get-progress" style="display:none;"></progress>
-  												</div>	<br>
-  												<div style="border: 1px solid grey;" id="manage-details-div">
-  																<p><b>No. of days: </b><span id="days_work_done"></span></p>
-  																<p><b>Total Cans: </b><span id="total-cans"></span></p>
-  																<p><b>Total Milk (in litres): </b><span id="total-cans-weight"></span></p>
-  																<p><b>Total Amount spent: </b><span id="total-amount"></span></p>
-  												</div>
-  												</div>
-    <div id="bill-form">
-      <table>
-        <caption>Milk Biller</caption>
-        <tbody>
-          <tr>
-            <th>Select Dairy</th>
-            <td>
-              <input type="radio" id="milk-seller-lakshmi-sai">Lakshmi Sai Diary
-            </td>
-          </tr>
-          <tr>
-            <th>Select Date</th>
-            <td>
-              <input type="date" id="date">
+          <div id="bill-form">
+            <table>
+              <caption>Milk Biller</caption>
+              <tbody>
+                <tr>
+                  <th>Select Dairy</th>
+                  <td>
+                    <select id="milk-seller-list"></select>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Select Date</th>
+                  <td>
+                    <input type="date" id="date">
+                    </br>
+                    <select id="am-pm">
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Enter Weights</th>
+                  <td>
+                    <textarea id="weights"></textarea>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Enter Cans weight</th>
+                  <td>
+                    <input type="number" id="can-weight">
+                  </td>
+                </tr>
+                <tr>
+                  <th>Enter Milk rate</th>
+                  <td>
+                    <input type="number" id="milk-price">
+                  </td>
+                </tr>
+                <tr>
+                  <th></th>
+                  <td>
+                    <button onclick="calculateResult();" class="bill-btn">Submit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div id="get-bill-div" style="width: max-content; margin: 0 auto; display: none; text-align: center;">
+              <p>
+                <b>Select bill date</b>
+              </p>
+              <input type="date" id="bill-date-input">
+              <br>
+              <br>
+              <button onclick="getBill(document.getElementById('bill-date-input').value);">Get Bill</button>
+              <br>
+              <progress id="get-bill-progress" style="display: none;"></progress>
+            </div>
+            <div style="display: none;" id="result-div">
+              <div id="result"></div>
               </br>
-              <select id="am-pm">
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <th>Enter Weights</th>
-            <td>
-              <textarea id="weights"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th>Enter Cans weight</th>
-            <td>
-              <input type="number" id="can-weight">
-            </td>
-          </tr>
-          <tr>
-            <th>Enter Milk rate</th>
-            <td>
-              <input type="number" id="milk-price">
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <button onclick="calculateResult();" class="bill-btn">Submit</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="display: none;" id="result-div">
-      <div id="result"></div>
-      </br>
-      <button id="whatsapp-send" style="background-color: aliceblue;">
-        <i class="fa fa-whatsapp"></i>
-      </button>
-    </div>
-  								</div>
-  				</div>
-    <script>
-        if(sessionStorage.getItem('login-status')==null || sessionStorage.getItem('login-status')==false){
-            showLoginDiv(true);
-            showMainDiv(false);
-        }else{
-            showLoginDiv(false);
-            showMainDiv(true);
-        }        
-        
-        function login(){
-            document.getElementById('login-progress').style.display = "block";
-            email = document.getElementById('email').value;
-            password = document.getElementById('password').value;
-                firebase.auth().signInWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    // Signed in
-    var user = userCredential.user;
-    showLoginDiv(false);
-    document.getElementById('login-progress').style.display = "none";
-    showMainDiv(true);
-    sessionStorage.setItem('login-status',true);
-    // ...
-  })
-  .catch((error) => {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    document.getElementById('login-progress').style.display = "none";
-    alert('You are not allowed to sign in. Kindly contact SVRMP about this error.');
-  });
-        }
-        
-        function showLoginDiv(show){
-            if(show){
-                document.getElementById('login-div').style.display = "block";
-            }else{
-                document.getElementById('login-div').style.display = "none";
-            }
-        }
-        
-        function showMainDiv(show){
-            if(show){
-                document.getElementById('main-div').style.display = "block";
-            }else{
-                document.getElementById('main-div').style.display = "none";
-            }
-        }
-        
-        no_of_days = parseInt(0);
-        amount_spent = parseInt(0);
-        total_cans = parseInt(0);
-        total_cans_weight = parseInt(0);
-    				function getDetails(){
-    								var db = firebase.firestore();
-    								var startDate = document.getElementById('start-date').value;
-    								var endDate = document.getElementById('end-date').value;
-    								
-    								if(startDate!=null && endDate!=null){
-    								document.getElementById('get-progress').style.display = 'block';
-    
-    								db.collection("Milk Biller").where("Date", ">=", startDate)
-    								.where("Date", "<=", endDate)
-    .get()
-    .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            no_of_days++;
-           amount = doc.data().Total_Bill.split(','); amount_spent+=parseInt(amount[0]+''+amount[1]);
-            total_cans+=doc.data().Cans_Count;
-            total_cans_weight+=parseFloat(doc.data().Bill_Without_Can_Weight)-parseFloat(doc.data().Can_Weight);
-        });
-        document.getElementById('get-progress').style.display = 'none';
-        document.getElementById('days_work_done').innerText = no_of_days;
-            document.getElementById('total-cans').innerText = total_cans;
-            document.getElementById('total-cans-weight').innerText = Intl.NumberFormat('en-IN').format(total_cans_weight);
-            document.getElementById('total-amount').innerText = "₹ "+Intl.NumberFormat('en-IN').format(amount_spent)+"/-";
-        no_of_days = parseInt(0);
-        amount_spent = parseInt(0);
-        total_cans = parseInt(0);
-        total_cans_weight = parseInt(0);
-    })
-    .catch((error) => {
-        console.log("Error getting documents: ", error);
-    });
-    								}
-    				}
-    				function openBiller(){
-    								document.getElementById('bill-form').style.display = 'block';
-    								document.getElementById('manage-div').style.display = 'none';
-    								document.getElementById('result-div').style.display = 'block';
-    								
-    								document.getElementById('manage-btn').style = "background-color: grey; color: white; border-bottom: none;";
-    								document.getElementById('biller-btn').style = "background-color: white; border-bottom: none;";
-    				}
-    				
-    				function openManage(){
-    								document.getElementById('bill-form').style.display = 'none';
-    								document.getElementById('manage-div').style.display = 'block';
-    								document.getElementById('result-div').style.display = 'block';
-    								document.getElementById('biller-btn').style = "background-color: grey; color: white; border-bottom: none;";
-    								document.getElementById('manage-btn').style = "background-color: white; border-bottom: none; color: black;";
-    				}
-    				
-      function openWhatsapp(number) {
-        window.location.href = "https://api.whatsapp.com/send?phone=+91" + number;
-      }
-      if (localStorage.getItem("result_div") != null && localStorage.getItem("wa") != null) {
-        var div = document.getElementById('result');
-        document.getElementById("result-div").style.display = 'block';
-        div.innerHTML = localStorage.getItem("result_div");
-        div.style.display = 'block';
-        document.getElementById("whatsapp-send").addEventListener('click', () => {
-          window.location.href = createWhatsAppLink(localStorage.getItem("wa"));
-        });
-      }
-      var textarea = document.getElementById('weights');
-      var heightLimit = 200;
-      textarea.oninput = function() {
-        textarea.style.height = "";
-        textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
-      }
-
-      function calculateResult() {
-        var weights = document.getElementById('weights');
-        var result = document.getElementById('result');
-        var resultText = weights.value;
-        result.innerHTML = alignBill(resultText);
-        document.getElementById('result-div').style.display = 'block';
-      }
-
-      function computeTotal(quantities) {
-        var weights = quantities.split('\n');
-        let sum = 0;
-        for (let i = 0; i < weights.length; i++) {
-          sum += parseFloat(weights[i]);
-        }
-        return sum.toFixed(3);
-      }
-
-      function alignBill(quantities) {
-        let bill = computeTotal(quantities);
-        let milk_rate = parseFloat(document.getElementById('milk-price').value);
-        let canWeight = parseFloat(document.getElementById('can-weight').value).toFixed(3);
-        var dairy = document.getElementById('milk-seller-lakshmi-sai');
-        var dairyName = "";
-        let weight = parseFloat(bill - canWeight).toFixed(3);
-        let totalAmount = parseFloat(weight * milk_rate).toFixed(0);
-        totalAmount = Intl.NumberFormat('en-IN').format(totalAmount);
-        var date1 = document.getElementById('date').value;
-        var date = new Date(date1).toLocaleDateString("en-GB");
-        var am_pm = document.getElementById('am-pm').value;
-        if (dairy.checked) {
-          dairyName = "Lakshmi Sai Dairy, Atmakur";
-        }
-        var weights = quantities.split('\n');
-        var weightsString = "";
-        var weightsString1 = "";
-        for (let i = 0; i < weights.length; i++) {
-          weightsString += weights[i] + "%0A";
-          weightsString1 += weights[i] + " </br>";
-        }
-        var result_wa = createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount,bill,milk_rate);
-        var result_div = createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount);
-        addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
-        addToLS(result_div, result_wa);
-        document.getElementById('whatsapp-send').addEventListener('click', () => {
-          window.location.href = createWhatsAppLink(result_wa);
-        });
-        return result_div;
-      }
-      
-      function createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount,bill,milk_rate){
-          return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_ (Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
-      }
-      
-      function createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount){
-          return "<b>"+dairyName+"</b></br><b>Date</b>: "+date+"<i>("+am_pm+") </i> </br> </br>"+weightsString1+"------------- </br> <b> "+bill+" </b> </br>"+"–  <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>------------- </br>"+weight+" × "+milk_rate+" </br>------------- </br> <b> ₹"+totalAmount+" / - </b>";
-      }
-
-      function createWhatsAppLink(message) {
-        return "whatsapp://send?text=" + message;
-      }
-
-      function addToLS(div, wa) {
-        localStorage.setItem("result_div", div);
-        localStorage.setItem("wa", wa);
-      }
-
-      function addToDB(date, milkpartner, weights, bill, canweight, milkrate, totalBill, am_pm) {
-        var db = firebase.firestore();
-        db.collection("Milk Biller").doc(date).set({
-          Date: date,
-          AM_PM: am_pm,
-          Milk_Partner: milkpartner,
-          Weights: weights,
-          Cans_Count: weights.length,
-          Bill_Without_Can_Weight: bill,
-          Can_Weight: canweight,
-          Milk_Rate_Per_Litre: milkrate,
-          Total_Bill: totalBill
-        }).then(() => {
-          console.log("Document successfully written!");
-        }).catch((error) => {
-          console.error("Error writing document: ", error);
-        });
-      }
-
-      function initDB() {
-        const firebaseConfig = {
-          apiKey: "AIzaSyABU3wrmKgVumYiW6MVBWn5CFg20k2LkiE",
-          authDomain: "srivenkataramanamilk-products.firebaseapp.com",
-          databaseURL: "https://srivenkataramanamilk-products-default-rtdb.firebaseio.com",
-          projectId: "srivenkataramanamilk-products",
-          storageBucket: "srivenkataramanamilk-products.appspot.com",
-          messagingSenderId: "305866360345",
-          appId: "1:305866360345:web:3919e57a4360fd2cdb0c88",
-          measurementId: "G-LCHPSC45B5"
-        };
-        firebase.initializeApp(firebaseConfig);
-      }
-      initDB();
-    </script>
+              <button id="whatsapp-send" style="background-color: aliceblue;">
+                <i class="fa fa-whatsapp"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+      <script>
+
+        function getBill(reqDate) {
+          document.getElementById('get-bill-progress').style.display = 'block';
+          db.collection("Milk Biller").doc(reqDate).get().then((doc) => {
+            if (doc.exists) {
+                document.getElementById('get-bill-progress').style.display = 'none';
+                var dairyName = doc.data().Milk_Partner;
+                var date = doc.data().Date;
+                var am_pm = doc.data().AM_PM;
+                var weights = doc.data().Weights;
+                var weightsString = "";
+                var weightsString1 = "";
+                let bill = getTotalWeight(weights);
+                var canWeight = doc.data().Can_Weight;
+                let weight = parseFloat(bill - canWeight).toFixed(3);
+
+                for(let i=0;i<weights.length;i++){
+                    weightsString += weights[i] + "%0A";
+                    weightsString1 += weights[i] + "  </br>";
+                }
+                
+                var totalAmount = doc.data().Total_Bill;
+                var milk_rate = doc.data().Milk_Rate_Per_Litre;
+                var result_wa = createWhatsappString(dairyName, new Date(date).toLocaleDateString("en-GB"), am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate);
+                var result_div = createDivString(dairyName, new Date(date).toLocaleDateString("en-GB"), am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount);
+                document.getElementById('result-div').style.display = 'block';
+                document.getElementById('result').innerHTML = result_div;
+                document.getElementById('whatsapp-send').addEventListener('click', () => {
+                    window.location.href = createWhatsAppLink(result_wa);
+                });
+            } 
+            else {
+                document.getElementById('get-bill-progress').style.display = 'none';
+                alert("No bill found");
+            }
+          }).catch((error) => {
+            console.log("Error getting document:", error);
+            document.getElementById('get-bill-progress').style.display = 'none';
+          });
+        }
+
+        if (sessionStorage.getItem('login-status') == null || sessionStorage.getItem('login-status') == false) {
+          showLoginDiv(true);
+          showMainDiv(false);
+        } else {
+          showLoginDiv(false);
+          showMainDiv(true);
+        }
+
+        function login() {
+          document.getElementById('login-progress').style.display = "block";
+          email = document.getElementById('email').value;
+          password = document.getElementById('password').value;
+          firebase.auth().signInWithEmailAndPassword(email, password).then((userCredential) => {
+            // Signed in
+            var user = userCredential.user;
+            showLoginDiv(false);
+            document.getElementById('login-progress').style.display = "none";
+            showMainDiv(true);
+            sessionStorage.setItem('login-status', true);
+            // ...
+          }).catch((error) => {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            document.getElementById('login-progress').style.display = "none";
+            alert('You are not allowed to sign in. Kindly contact SVRMP about this error.');
+          });
+        }
+
+        function showLoginDiv(show) {
+          if (show) {
+            document.getElementById('login-div').style.display = "block";
+          } else {
+            document.getElementById('login-div').style.display = "none";
+          }
+        }
+
+        function showMainDiv(show) {
+          if (show) {
+            document.getElementById('main-div').style.display = "block";
+          } else {
+            document.getElementById('main-div').style.display = "none";
+          }
+        }
+        no_of_days = parseInt(0);
+        amount_spent = parseInt(0);
+        total_cans = parseInt(0);
+        total_cans_weight = parseInt(0);
+
+        function getDetails() {
+          var db = firebase.firestore();
+          var startDate = document.getElementById('start-date').value;
+          var endDate = document.getElementById('end-date').value;
+          if (startDate != null && endDate != null) {
+            document.getElementById('get-progress').style.display = 'block';
+            db.collection("Milk Biller").where("Date", ">=", startDate).where("Date", "<=", endDate).get().then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                no_of_days++;
+                amount = doc.data().Total_Bill.split(',');
+                amount_spent += parseInt(amount[0] + '' + amount[1]);
+                total_cans += doc.data().Cans_Count;
+                total_cans_weight += parseFloat(doc.data().Bill_Without_Can_Weight) - parseFloat(doc.data().Can_Weight);
+              });
+              document.getElementById('get-progress').style.display = 'none';
+              document.getElementById('days_work_done').innerText = no_of_days;
+              document.getElementById('total-cans').innerText = total_cans;
+              document.getElementById('total-cans-weight').innerText = Intl.NumberFormat('en-IN').format(total_cans_weight);
+              document.getElementById('total-amount').innerText = "₹ " + Intl.NumberFormat('en-IN').format(amount_spent) + "/-";
+              no_of_days = parseInt(0);
+              amount_spent = parseInt(0);
+              total_cans = parseInt(0);
+              total_cans_weight = parseInt(0);
+            }).catch((error) => {
+              console.log("Error getting documents: ", error);
+            });
+          }
+        }
+
+        function openBiller() {
+          document.getElementById('bill-form').style.display = 'block';
+          document.getElementById('manage-div').style.display = 'none';
+          document.getElementById('result-div').style.display = 'block';
+          document.getElementById('get-bill-div').style.display = 'none';
+          document.getElementById('manage-btn').style = "background-color: grey; color: white; border-bottom: none;";
+          document.getElementById('biller-btn').style = "background-color: white; border-bottom: none;";
+        }
+
+        function openManage() {
+          document.getElementById('bill-form').style.display = 'none';
+          document.getElementById('manage-div').style.display = 'block';
+          document.getElementById('result-div').style.display = 'block';
+          document.getElementById('get-bill-div').style.display = 'block';
+          document.getElementById('biller-btn').style = "background-color: grey; color: white; border-bottom: none;";
+          document.getElementById('manage-btn').style = "background-color: white; border-bottom: none; color: black;";
+        }
+
+        function openWhatsapp(number) {
+          window.location.href = "https://api.whatsapp.com/send?phone=+91" + number;
+        }
+        if (localStorage.getItem("result_div") != null && localStorage.getItem("wa") != null) {
+          var div = document.getElementById('result');
+          document.getElementById("result-div").style.display = 'block';
+          div.innerHTML = localStorage.getItem("result_div");
+          div.style.display = 'block';
+          document.getElementById("whatsapp-send").addEventListener('click', () => {
+            window.location.href = createWhatsAppLink(localStorage.getItem("wa"));
+          });
+        }
+        var textarea = document.getElementById('weights');
+        var heightLimit = 200;
+        textarea.oninput = function() {
+          textarea.style.height = "";
+          textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
+        }
+
+        function calculateResult() {
+          var weights = document.getElementById('weights');
+          var result = document.getElementById('result');
+          var resultText = weights.value;
+          result.innerHTML = alignBill(resultText);
+          document.getElementById('result-div').style.display = 'block';
+        }
+
+        function computeTotal(quantities) {
+          var weights = quantities.split('\n');
+          let sum = 0;
+          for (let i = 0; i < weights.length; i++) {
+            sum += parseFloat(weights[i]);
+          }
+          return sum.toFixed(3);
+        }
+
+        function getTotalWeight(weights) {
+          let sum = 0;
+          for (let i = 0; i < weights.length; i++) {
+            sum += parseFloat(weights[i]);
+          }
+          return sum.toFixed(3);
+        }
+
+        function alignBill(quantities) {
+          let bill = computeTotal(quantities);
+          let milk_rate = parseFloat(document.getElementById('milk-price').value);
+          let canWeight = parseFloat(document.getElementById('can-weight').value).toFixed(3);
+          var dairyName = document.getElementById('milk-seller-list').value;
+          let weight = parseFloat(bill - canWeight).toFixed(3);
+          let totalAmount = parseFloat(weight * milk_rate).toFixed(0);
+          totalAmount = Intl.NumberFormat('en-IN').format(totalAmount);
+          var date1 = document.getElementById('date').value;
+          var date = new Date(date1).toLocaleDateString("en-GB");
+          var am_pm = document.getElementById('am-pm').value;
+          var weights = quantities.split('\n');
+          var weightsString = "";
+          var weightsString1 = "";
+          for (let i = 0; i < weights.length; i++) {
+            weightsString += weights[i] + "%0A";
+            weightsString1 += weights[i] + "</br>";
+          }
+          var result_wa = createWhatsappString(dairyName, date, am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate);
+          var result_div = createDivString(dairyName, date, am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount);
+          addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
+          addToLS(result_div, result_wa);
+          document.getElementById('whatsapp-send').addEventListener('click', () => {
+            window.location.href = createWhatsAppLink(result_wa);
+          });
+          return result_div;
+        }
+
+        function createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount,bill,milk_rate){
+          return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_ (Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
+        }
+      
+        function createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount){
+            return "<b>"+dairyName+"</b></br><b>Date</b>: "+date+"<i>("+am_pm+") </i> </br> </br>"+weightsString1+"------------- </br> <b> "+bill+" </b> </br>"+"–  <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>------------- </br>"+weight+" × "+milk_rate+" </br>------------- </br> <b> ₹"+totalAmount+" / - </b>";
+        }
+
+        function createWhatsAppLink(message) {
+          return "whatsapp://send?text=" + message;
+        }
+
+        function addToLS(div, wa) {
+          localStorage.setItem("result_div", div);
+          localStorage.setItem("wa", wa);
+        }
+
+        function addToDB(date, milkpartner, weights, bill, canweight, milkrate, totalBill, am_pm) {
+          var db = firebase.firestore();
+          db.collection("Milk Biller").doc(date).set({
+            Date: date,
+            AM_PM: am_pm,
+            Milk_Partner: milkpartner,
+            Weights: weights,
+            Cans_Count: weights.length,
+            Bill_Without_Can_Weight: bill,
+            Can_Weight: canweight,
+            Milk_Rate_Per_Litre: milkrate,
+            Total_Bill: totalBill
+          }).then(() => {
+            console.log("Document successfully written!");
+          }).catch((error) => {
+            console.error("Error writing document: ", error);
+          });
+        }
+
+        function initDB() {
+          const firebaseConfig = {
+            apiKey: "AIzaSyABU3wrmKgVumYiW6MVBWn5CFg20k2LkiE",
+            authDomain: "srivenkataramanamilk-products.firebaseapp.com",
+            databaseURL: "https://srivenkataramanamilk-products-default-rtdb.firebaseio.com",
+            projectId: "srivenkataramanamilk-products",
+            storageBucket: "srivenkataramanamilk-products.appspot.com",
+            messagingSenderId: "305866360345",
+            appId: "1:305866360345:web:3919e57a4360fd2cdb0c88",
+            measurementId: "G-LCHPSC45B5"
+          };
+          firebase.initializeApp(firebaseConfig);
+        }
+        initDB();
+        var db = firebase.firestore();
+        db.collection("Milk Sellers").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            var option = document.createElement('option');
+            option.value = doc.data().Seller_Name + ", " + doc.data().Seller_Place;
+            option.innerText = doc.id;
+            document.getElementById('milk-seller-list').appendChild(option);
+          });
+        });
+        db.collection("Milk Biller").orderBy("Date", "desc").limit(1).get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0');
+                var yyyy = today.getFullYear();
+
+                today = yyyy+"-"+mm+"-"+dd;
+                getBill(today);
+          });
+        });
+      </script>
+    </div>
   </body>
 </html>
