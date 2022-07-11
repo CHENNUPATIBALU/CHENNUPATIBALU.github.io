@@ -513,10 +513,10 @@
         });
         db.collection("Milk Biller").orderBy("Date", "desc").limit(1).get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            var today = new Date();
-                var dd = String(today.getDate()).padStart(2, '0');
-                var mm = String(today.getMonth() + 1).padStart(2, '0');
-                var yyyy = today.getFullYear();
+                var latest = doc.data().Date.split("-");
+                var dd = latest[2];
+                var mm = latest[1];
+                var yyyy = latest[0];
 
                 today = yyyy+"-"+mm+"-"+dd;
                 getBill(today);
