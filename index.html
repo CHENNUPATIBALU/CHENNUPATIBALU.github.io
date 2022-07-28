@@ -463,7 +463,7 @@
         function computeTotal(quantities) {
           var weights = quantities.split('\n');
           let sum = 0;
-          for (let i = 0; i < weights.length; i++) {
+          for (let i = 0; i < weights.length && weights[i]!=""; i++) {
             sum += parseFloat(weights[i]);
           }
           return sum.toFixed(3);
