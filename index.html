@@ -63,7 +63,8 @@
 
       #result {
         margin-top: 20px;
-        border: 1px solid grey;
+        padding:5px;
+        border: 2px solid grey;
         border-radius: 8px;
       }
 
@@ -89,23 +90,35 @@
       }
 
       #biller-btn {
-        background-color: white;
+        background-color: grey;
         border-bottom: none;
+        color: white;
       }
 
       #manage-btn {
         border-bottom: none;
-        background-color: grey;
-        color: white;
+        background-color: white;
+        color: black;
       }
 
       #main-div {
         display: none;
+        position: absolute;
+        left:0px;
+        right:0px;
+        top:0px;
+        bottom:0px;
+        height:max-content;
+        background-image: url("https://res.cloudinary.com/chennupati-balu/image/upload/v1659016180/SriVenkataRamanaMilkProducts/images/bg-image.jpg");
+        background-size: cover; 
+        background-position: center center;
+        
       }
 
       #login-div {
         padding: 10%;
         text-align: center;
+        height: 100%;
       }
 
       #login-div input {
@@ -140,6 +153,7 @@
       input,textarea,select{
         width: inherit;
         height: 20px;
+        border-radius: 5px;
       }
       
       select{
@@ -176,7 +190,7 @@
       </div>
     </div>
     <div id="main-div">
-      <div style="width: max-content;margin: 0 auto;display:block">
+      <div style="width: max-content;margin: 0 auto;display:block; padding: 10px;">
         <input type="tel" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
         <br>
         <br>
@@ -220,7 +234,6 @@
           </div>
           <div id="bill-form">
             <table>
-              <caption>Milk Biller</caption>
               <tbody>
                 <tr>
                   <th>Select Dairy</th>
@@ -407,8 +420,8 @@
           document.getElementById('manage-div').style.display = 'none';
           document.getElementById('result-div').style.display = 'block';
           document.getElementById('get-bill-div').style.display = 'none';
-          document.getElementById('manage-btn').style = "background-color: grey; color: white; border-bottom: none;";
-          document.getElementById('biller-btn').style = "background-color: white; border-bottom: none;";
+          document.getElementById('manage-btn').style = "background-color: white; color: black; border-bottom: none;";
+          document.getElementById('biller-btn').style = "background-color: grey; border-bottom: none; color:white;";
         }
 
         function openManage() {
@@ -416,8 +429,8 @@
           document.getElementById('manage-div').style.display = 'block';
           document.getElementById('result-div').style.display = 'block';
           document.getElementById('get-bill-div').style.display = 'block';
-          document.getElementById('biller-btn').style = "background-color: grey; color: white; border-bottom: none;";
-          document.getElementById('manage-btn').style = "background-color: white; border-bottom: none; color: black;";
+          document.getElementById('biller-btn').style = "background-color: white; color: black; border-bottom: none;";
+          document.getElementById('manage-btn').style = "background-color: grey; border-bottom: none; color: white;";
         }
 
         function openWhatsapp(number) {
