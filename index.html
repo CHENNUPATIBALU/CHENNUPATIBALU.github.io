@@ -15,13 +15,23 @@
       table,
       th,
       td {
-        border: 1px solid black;
         margin: 8px;
+      }
+      
+      tr{
+          margin: 5px;
       }
 
       th{
         background-color: rgb(248, 129, 45);
         color: white;
+        border-radius: 5px;
+        box-shadow: 2px 2.5px 2.5px 1px grey;
+      }
+      
+      td{
+        border-radius: 5px;
+        box-shadow: 2px 2.5px 2.5px 1px grey;
       }
 
       body {
@@ -44,8 +54,11 @@
         margin: 0 auto;
         display: block;
         cursor: pointer;
+        padding: 10px;
+        background-color: white;
         border: 0.5px solid black;
         border-radius: 4px;
+        box-shadow: 1px 0.5px 0.5px 0.5px grey;
       }
 
       #result {
@@ -56,6 +69,11 @@
 
       .fa-whatsapp {
         font-size: 30px;
+      }
+      
+      input[type=number]{
+          padding: 10px;
+          border: none;
       }
 
       #manage-div {
@@ -86,12 +104,16 @@
       }
 
       #login-div {
-        margin-top: 15%;
+        padding: 10%;
+        text-align: center;
       }
 
       #login-div input {
         margin: 5px;
         height: 40px;
+        border: 0.5px solid grey;
+        border-radius: 5px;
+        box-shadow: 2px 3px 0.5px 0.5px grey;
         font-size: 18px;
       }
 
@@ -103,6 +125,10 @@
       #login-div button {
         padding: 10px;
         font-size: 15px;
+        border-radius: 5px;
+        border: 1px solid grey;
+        cursor: pointer;
+        box-shadow: 1px 0.5px 0.5px 0.5px grey;
         font-family: 'Roboto', sans-serif;
       }
 
@@ -114,6 +140,25 @@
       input,textarea,select{
         width: inherit;
         height: 20px;
+      }
+      
+      select{
+          text-align:center;
+          background-color: white;
+          width: 100%;
+          border: none;
+      }
+      #date{
+          width: 100%;
+          padding:0;
+          background-color: white;
+          border: none;
+          text-align: center;
+      }
+      textarea{
+          width: 100%;
+          padding:0;
+          border:none;
       }
     </style>
   </head>
@@ -132,7 +177,7 @@
     </div>
     <div id="main-div">
       <div style="width: max-content;margin: 0 auto;display:block">
-        <input type="number" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
+        <input type="tel" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
         <br>
         <br>
         <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="bill-btn">Open WhatsApp</button>
@@ -212,14 +257,9 @@
                     <input type="number" id="milk-price">
                   </td>
                 </tr>
-                <tr>
-                  <th></th>
-                  <td>
-                    <button onclick="calculateResult();" class="bill-btn">Submit</button>
-                  </td>
-                </tr>
               </tbody>
             </table>
+            <button onclick="calculateResult();" class="bill-btn">Submit</button>
           </div>
           <div>
             <div id="get-bill-div" style="width: max-content; margin: 0 auto; display: none; text-align: center;">
@@ -522,6 +562,18 @@
                 getBill(today);
           });
         });
+        
+        var date = new Date();
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        var today = year + "-" + month + "-" + day;       
+        document.getElementById("date").value = today;
       </script>
     </div>
   </body>
