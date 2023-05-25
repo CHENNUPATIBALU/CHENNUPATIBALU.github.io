@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -62,7 +63,7 @@
         margin: 5px;
       }
 
-      #login-progress {
+      #login-progress, #get-bill-div {
         display: none;
       }
     </style>
@@ -297,7 +298,8 @@
 
         function showMainDiv(show) {
           if (show) {
-            openBiller(); document.getElementById('main-div').style.display = "block";
+            openBiller();
+             document.getElementById('main-div').style.display = "block";
           } else {
             document.getElementById('main-div').style.display = "none";
           }
@@ -341,6 +343,7 @@
           document.getElementById('tab-default-2').style.display = 'none';
           document.getElementsByClassName('slds-tabs_default__item')[1].classList.remove('slds-is-active');
           document.getElementsByClassName('slds-tabs_default__item')[0].classList.add('slds-is-active');
+          document.getElementById('get-bill-div').style.display = "none";
         }
 
         function openManage() {
@@ -348,6 +351,7 @@
           document.getElementsByClassName('slds-tabs_default__item')[0].classList.remove('slds-is-active');
           document.getElementsByClassName('slds-tabs_default__item')[1].classList.add('slds-is-active');
           document.getElementById('tab-default-2').style.display = 'block';
+          document.getElementById('get-bill-div').style.display = "block";
         }
 
         function openWhatsapp(number) {
@@ -499,10 +503,15 @@
         if (day < 10) day = "0" + day;
         var today = year + "-" + month + "-" + day;
         document.getElementById("date").value = today;
-        //showMainDiv(true)
+      //  showMainDiv(true)
       </script>
   </body>
 </html>
+
+                  
+                
+        
+
 
 
 
