@@ -5,33 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biller</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.21.1/styles/salesforce-lightning-design-system.min.css">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-
-      table,
-      th,
-      td {
-        margin: 8px;
-      }
-      
-      tr{
-          margin: 5px;
-      }
-
-      th{
-        background-color: rgb(248, 129, 45);
-        color: white;
-        border-radius: 5px;
-        box-shadow: 2px 2.5px 2.5px 1px grey;
-      }
-      
-      td{
-        border-radius: 5px;
-        box-shadow: 2px 2.5px 2.5px 1px grey;
+      #main-div {
+        display: none;
       }
 
       body {
@@ -63,7 +40,7 @@
 
       #result {
         margin-top: 20px;
-        padding:5px;
+        padding: 5px;
         border: 2px solid grey;
         border-radius: 8px;
       }
@@ -71,233 +48,167 @@
       .fa-whatsapp {
         font-size: 30px;
       }
-      
-      input[type=number]{
-          padding: 10px;
-          border: none;
+
+      input[type=number] {
+        padding: 10px;
       }
 
       #manage-div {
         padding: 10px;
-        display: none;
+        /*display: none;*/
       }
 
-      #manage-btn,
-      #biller-btn {
-        border: 1px solid black;
-        cursor: pointer;
-        padding: 10px;
-      }
-
-      #biller-btn {
-        background-color: grey;
-        border-bottom: none;
-        color: white;
-      }
-
-      #manage-btn {
-        border-bottom: none;
-        background-color: white;
-        color: black;
-      }
-
-      #main-div {
-        display: none;
-        position: absolute;
-        left:0px;
-        
-        right:0px;
-        top:0px;
-        bottom:0px;
-        height:max-content;
-        background-image: url("https://res.cloudinary.com/chennupati-balu/image/upload/v1659016180/SriVenkataRamanaMilkProducts/images/bg-image.jpg");
-        background-size: cover; 
-        background-position: center center;
-        
-      }
-
-      #login-div {
-        padding: 10%;
-        text-align: center;
-        height: 100%;
-      }
-
-      #login-div input {
+      .biller-div {
         margin: 5px;
-        height: 40px;
-        border: 0.5px solid grey;
-        border-radius: 5px;
-        box-shadow: 2px 3px 0.5px 0.5px grey;
-        font-size: 18px;
-      }
-
-      h3 {
-        font-size: 40px;
-        font-family: 'Roboto', sans-serif;
-      }
-
-      #login-div button {
-        padding: 10px;
-        font-size: 15px;
-        border-radius: 5px;
-        border: 1px solid grey;
-        cursor: pointer;
-        box-shadow: 1px 0.5px 0.5px 0.5px grey;
-        font-family: 'Roboto', sans-serif;
       }
 
       #login-progress {
-        margin: 0 auto;
         display: none;
-      }
-
-      input,textarea,select{
-        width: inherit;
-        height: 20px;
-        border-radius: 5px;
-      }
-      
-      select{
-          text-align:center;
-          background-color: white;
-          width: 100%;
-          border: none;
-      }
-      #date{
-          width: 100%;
-          padding:0;
-          background-color: white;
-          border: none;
-          text-align: center;
-      }
-      textarea{
-          width: 100%;
-          padding:0;
-          border:none;
       }
     </style>
   </head>
   <body>
-    <div id="login-div">
-      <div style="width: max-content; margin: 0 auto;">
-        <h3 style="text-align: center;">Login</h3>
-        <input type="email" placeholder="Email*" id="email">
-        <br>
-        <input type="password" placeholder="Password*" id="password">
-        <br>
-        <button onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button>
-        <br>
-        <progress id="login-progress"></progress>
-      </div>
-    </div>
-    <div id="main-div">
-      <div style="width: max-content;margin: 0 auto;display:block; padding: 10px;">
-        <input type="tel" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
-        <br>
-        <br>
-        <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="bill-btn">Open WhatsApp</button>
-      </div>
-      <br>
+    <div>
       <div>
-        <button onclick="openBiller();" id="biller-btn">Biller</button>
-        <button onclick="openManage();" id="manage-btn">Manage</button>
-        <div style="border: 1px solid grey; padding: 10px;">
-          <div id="manage-div">
-            <div id="date-range-div">
-              <p>
-                <b>Start date</b>: <input type="date" id="start-date">
-              </p>
-              <p>
-                <b>End date</b>: <input type="date" id="end-date">
-              </p>
-              <button onclick="getDetails();" style="padding: 10px; font-size: large;">Get</button>
-              <progress id="get-progress" style="display:none;"></progress>
-            </div>
-            <br>
-            <div style="border: 1px solid grey;" id="manage-details-div">
-              <p>
-                <b>No. of days: </b>
-                <span id="days_work_done"></span>
-              </p>
-              <p>
-                <b>Total Cans: </b>
-                <span id="total-cans"></span>
-              </p>
-              <p>
-                <b>Total Milk (in litres): </b>
-                <span id="total-cans-weight"></span>
-              </p>
-              <p>
-                <b>Total Amount spent: </b>
-                <span id="total-amount"></span>
-              </p>
+        <div id="login-div" style="width: max-content; margin: 0 auto;">
+          <h3 style="text-align: center;" class="slds-text-heading_large">Login</h3>
+          <div class="slds-form-element">
+            <label class="slds-form-element__label" for="email">
+              <abbr class="slds-required" title="required">* </abbr>Email </label>
+            <div class="slds-form-element__control">
+              <input type="email" id="email" required="" class="slds-input" />
             </div>
           </div>
-          <div id="bill-form">
-            <table>
-              <tbody>
-                <tr>
-                  <th>Select Dairy</th>
-                  <td>
-                    <select id="milk-seller-list"></select>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Select Date</th>
-                  <td>
-                    <input type="date" id="date">
-                    </br>
-                    <select id="am-pm">
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Enter Weights</th>
-                  <td>
-                    <textarea id="weights"></textarea>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Enter Cans weight</th>
-                  <td>
-                    <input type="number" id="can-weight">
-                  </td>
-                </tr>
-                <tr>
-                  <th>Enter Milk rate</th>
-                  <td>
-                    <input type="number" id="milk-price">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <button onclick="calculateResult();" class="bill-btn">Submit</button>
+          <div style="width: max-content; margin: 0 auto;">
+            <div class="slds-form-element">
+              <label class="slds-form-element__label" for="password">
+                <abbr class="slds-required" title="required">* </abbr>Password </label>
+              <div class="slds-form-element__control">
+                <input type="password" id="password" required="" class="slds-input" />
+              </div>
+            </div>
+            <button class="slds-button slds-button_brand" onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button>
+            <br>
+            <progress class="slds-align_absolute-center" id="login-progress"></progress>
+          </div>
+        </div>
+        <div id="main-div">
+            <br>
+          <input class="slds-input slds-align_absolute-center" type="tel" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
+          <br>
+          <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="slds-button  slds-align_absolute-center slds-button_brand">Open WhatsApp</button>
+          <br>
+          <div class="slds-tabs_default">
+            <ul class="slds-tabs_default__nav" role="tablist">
+              <li class="slds-tabs_default__item slds-is-active" title="Biller" role="presentation">
+                <a class="slds-tabs_default__link" href="#" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-default-1" id="tab-default-1__item" onclick="openBiller();">Biller</a>
+              </li>
+              <li class="slds-tabs_default__item" title="Manage" role="presentation">
+                <a class="slds-tabs_default__link" href="#" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item" onclick="openManage();">Manage</a>
+              </li>
+            </ul>
+            <div id="tab-default-1" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
+              <div class="biller-div">
+                <div class="slds-form-element">
+                  <div class="slds-form-element__control">
+                    <label class="slds-form-element__label">Select Dairy</label>
+                    <div class="slds-select_container">
+                      <select class="slds-select" id="milk-seller-list"></select>
+                    </div>
+                  </div>
+                </div>
+                <label class="slds-form-element__label">Select Date</label>
+                <table>
+                  <tr>
+                    <td>
+                      <input class="slds-input" type="date" id="date">
+                    </td>
+                    <td>
+                      <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                          <div class="slds-select_container">
+                            <select class="slds-select" id="am-pm">
+                              <option value="AM">AM</option>
+                              <option value="PM">PM</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <label class="slds-form-element__label">Enter weights</label>
+                <textarea class="slds-textarea" id="weights"></textarea>
+                <label class="slds-form-element__label">Enter Cans weight</label>
+                <input class="slds-input" type="number" id="can-weight">
+                <label class="slds-form-element__label">Enter Milk rate</label>
+                <input class="slds-input" type="number" id="milk-price">
+                <br>
+                <br>
+                <button onclick="calculateResult();" class="slds-button slds-button_brand slds-align_absolute-center">Submit</button>
+              </div>
+            </div>
+            <div id="tab-default-2" class="slds-tabs_default__content" role="tabpanel" aria-labelledby="tab-default-2__item">
+              <div id="date-range-div">
+                <p>
+                  <b>Start date</b>: <input type="date" style="margin: 4px;" class="slds-input" id="start-date">
+                </p>
+                <p>
+                  <b>End date</b>: <input type="date" style="margin: 4px;" class="slds-input" id="end-date">
+                </p>
+                <br>
+                <button class="slds-button slds-button_neutral slds-align_absolute-center" onclick="getDetails();" style="width: 60px; padding: 5px; font-size: large;">Get</button>
+                <progress id="get-progress" style="display:none;"></progress>
+              </div>
+              <br>
+              <div style="border: 1px solid grey; margin: 5px; padding: 4px; border-radius: 4px;" id="manage-details-div">
+                <p>
+                  <b>No. of days: </b>
+                  <span id="days_work_done"></span>
+                </p>
+                <p>
+                  <b>Total Cans: </b>
+                  <span id="total-cans"></span>
+                </p>
+                <p>
+                  <b>Total Milk (in litres): </b>
+                  <span id="total-cans-weight"></span>
+                </p>
+                <p>
+                  <b>Total Amount spent: </b>
+                  <span id="total-amount"></span>
+                </p>
+              </div>
+            </div>
           </div>
           <div>
-            <div id="get-bill-div" style="width: max-content; margin: 0 auto; display: none; text-align: center;">
+              <div id="get-bill-div" style="width: max-content; margin: 0 auto; text-align: center;">
               <p>
                 <b>Select bill date</b>
               </p>
-              <input type="date" id="bill-date-input">
+              <input class="slds-input" type="date" id="bill-date-input">
               <br>
               <br>
-              <button onclick="getBill(document.getElementById('bill-date-input').value);">Get Bill</button>
+              <button onclick="getBill(document.getElementById('bill-date-input').value);" class="slds-button slds-button_brand">Get Bill</button>
               <br>
               <progress id="get-bill-progress" style="display: none;"></progress>
             </div>
             <div style="display: none;" id="result-div">
-              <div id="result"></div>
-              </br>
-              <button id="whatsapp-send" style="background-color: aliceblue;">
-                <i class="fa fa-whatsapp"></i>
-              </button>
-            </div>
+            <div id="result"></div>
+            </br>
+            <button id="whatsapp-send" style="background-color: aliceblue;">
+              <i class="fa fa-whatsapp"></i>
+            </button>
+          </div>
           </div>
         </div>
       </div>
+      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
       <script>
+        initDB();
 
         function getBill(reqDate) {
           document.getElementById('get-bill-progress').style.display = 'block';
@@ -338,7 +249,6 @@
             document.getElementById('get-bill-progress').style.display = 'none';
           });
         }
-
         if (sessionStorage.getItem('login-status') == null || sessionStorage.getItem('login-status') == false) {
           showLoginDiv(true);
           showMainDiv(false);
@@ -351,20 +261,30 @@
           document.getElementById('login-progress').style.display = "block";
           email = document.getElementById('email').value;
           password = document.getElementById('password').value;
+          //alert(password); 
           firebase.auth().signInWithEmailAndPassword(email, password).then((userCredential) => {
             // Signed in
             var user = userCredential.user;
             showLoginDiv(false);
             document.getElementById('login-progress').style.display = "none";
-            showMainDiv(true);
+            try{
+                showMainDiv(true);
+                console.log('hello')
+            }catch(e){
+                console.log(e)
+            }
+            
+            //alert(JSON.stringify(user))
             sessionStorage.setItem('login-status', true);
             // ...
           }).catch((error) => {
             var errorCode = error.code;
             var errorMessage = error.message;
+            console.log(error);
             document.getElementById('login-progress').style.display = "none";
             alert('You are not allowed to sign in. Kindly contact SVRMP about this error.');
           });
+          firebase.auth();
         }
 
         function showLoginDiv(show) {
@@ -377,7 +297,7 @@
 
         function showMainDiv(show) {
           if (show) {
-            document.getElementById('main-div').style.display = "block";
+            openBiller(); document.getElementById('main-div').style.display = "block";
           } else {
             document.getElementById('main-div').style.display = "none";
           }
@@ -417,21 +337,17 @@
         }
 
         function openBiller() {
-          document.getElementById('bill-form').style.display = 'block';
-          document.getElementById('manage-div').style.display = 'none';
-          document.getElementById('result-div').style.display = 'block';
-          document.getElementById('get-bill-div').style.display = 'none';
-          document.getElementById('manage-btn').style = "background-color: white; color: black; border-bottom: none;";
-          document.getElementById('biller-btn').style = "background-color: grey; border-bottom: none; color:white;";
+          document.getElementById('tab-default-1').style.display = 'block';
+          document.getElementById('tab-default-2').style.display = 'none';
+          document.getElementsByClassName('slds-tabs_default__item')[1].classList.remove('slds-is-active');
+          document.getElementsByClassName('slds-tabs_default__item')[0].classList.add('slds-is-active');
         }
 
         function openManage() {
-          document.getElementById('bill-form').style.display = 'none';
-          document.getElementById('manage-div').style.display = 'block';
-          document.getElementById('result-div').style.display = 'block';
-          document.getElementById('get-bill-div').style.display = 'block';
-          document.getElementById('biller-btn').style = "background-color: white; color: black; border-bottom: none;";
-          document.getElementById('manage-btn').style = "background-color: grey; border-bottom: none; color: white;";
+          document.getElementById('tab-default-1').style.display = 'none';
+          document.getElementsByClassName('slds-tabs_default__item')[0].classList.remove('slds-is-active');
+          document.getElementsByClassName('slds-tabs_default__item')[1].classList.add('slds-is-active');
+          document.getElementById('tab-default-2').style.display = 'block';
         }
 
         function openWhatsapp(number) {
@@ -464,7 +380,7 @@
         function computeTotal(quantities) {
           var weights = quantities.split('\n');
           let sum = 0;
-          for (let i = 0; i < weights.length && weights[i]!=""; i++) {
+          for (let i = 0; i < weights.length && weights[i] != ""; i++) {
             sum += parseFloat(weights[i]);
           }
           return sum.toFixed(3);
@@ -494,7 +410,7 @@
           var weightsString1 = "";
           for (let i = 0; i < weights.length; i++) {
             weightsString += weights[i] + "%0A";
-            weightsString1 += weights[i] + "</br>";
+            weightsString1 += weights[i] + " < /br>";
           }
           var result_wa = createWhatsappString(dairyName, date, am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate);
           var result_div = createDivString(dairyName, date, am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount);
@@ -506,12 +422,12 @@
           return result_div;
         }
 
-        function createWhatsappString(dairyName,date,am_pm,weightsString,canWeight,weight,totalAmount,bill,milk_rate){
+        function createWhatsappString(dairyName, date, am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate) {
           return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_ (Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
         }
-      
-        function createDivString(dairyName,date,am_pm,weightsString1,bill,milk_rate,canWeight,weight,totalAmount){
-            return "<b>"+dairyName+"</b></br><b>Date</b>: "+date+"<i>("+am_pm+") </i> </br> </br>"+weightsString1+"------------- </br> <b> "+bill+" </b> </br>"+"–  <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>------------- </br>"+weight+" × "+milk_rate+" </br>------------- </br> <b> ₹"+totalAmount+" / - </b>";
+
+        function createDivString(dairyName, date, am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount) {
+          return "<b>"+dairyName+"</b></br> <b> Date </b>: "+date+" <i> ("+am_pm+") </i> </br> </br>"+weightsString1+"-------------  </br> <b> "+bill+" </b> </br>"+"–   <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>-------------  </br>"+weight+" × "+milk_rate+"  </br>-------------  </br> <b> ₹"+totalAmount+" / - </b>";
         }
 
         function createWhatsAppLink(message) {
@@ -555,7 +471,7 @@
           };
           firebase.initializeApp(firebaseConfig);
         }
-        initDB();
+        // initDB();
         var db = firebase.firestore();
         db.collection("Milk Sellers").get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
@@ -567,28 +483,31 @@
         });
         db.collection("Milk Biller").orderBy("Date", "desc").limit(1).get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-                var latest = doc.data().Date.split("-");
-                var dd = latest[2];
-                var mm = latest[1];
-                var yyyy = latest[0];
-
-                today = yyyy+"-"+mm+"-"+dd;
-                getBill(today);
+            var latest = doc.data().Date.split("-");
+            var dd = latest[2];
+            var mm = latest[1];
+            var yyyy = latest[0];
+            today = yyyy + "-" + mm + "-" + dd;
+            getBill(today);
           });
         });
-        
         var date = new Date();
-
         var day = date.getDate();
         var month = date.getMonth() + 1;
         var year = date.getFullYear();
-
         if (month < 10) month = "0" + month;
         if (day < 10) day = "0" + day;
-
-        var today = year + "-" + month + "-" + day;       
+        var today = year + "-" + month + "-" + day;
         document.getElementById("date").value = today;
+        //showMainDiv(true)
       </script>
-    </div>
   </body>
 </html>
+
+
+
+       
+
+        
+
+
