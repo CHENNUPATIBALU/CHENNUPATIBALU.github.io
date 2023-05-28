@@ -106,10 +106,10 @@
           <br>
           <div class="slds-tabs_default">
             <ul class="slds-tabs_default__nav" role="tablist">
-              <li class="slds-tabs_default__item slds-is-active" title="Biller" role="presentation">
+              <li class="slds-tabs_default__item slds-is-active" title="Biller" onclick="openBiller();" role="presentation">
                 <a class="slds-tabs_default__link" href="#" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-default-1" id="tab-default-1__item" onclick="openBiller();">Biller</a>
               </li>
-              <li class="slds-tabs_default__item" title="Manage" role="presentation">
+              <li class="slds-tabs_default__item" title="Manage" role="presentation" onclick="openManage();">
                 <a class="slds-tabs_default__link" href="#" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item" onclick="openManage();">Manage</a>
               </li>
             </ul>
@@ -148,7 +148,7 @@
                 <div class="slds-form-element__help">
                     <div style="display: inline">
                         <span id="cans-count" class="slds-text_heading-small"></span>
-                        <a class="slds-button" onclick="shuffleWeights()" style="float:right;"><i class="fa fa-shuffle"></i>&nbsp;Shuffle Weights</a>
+                        <a onclick="shuffleWeights()" style="float:right; padding:0; text-decoration: none;"><i class="fa fa-shuffle"></i>&nbsp;Shuffle Weights</a>
                     </div>
                 </div>
                 <br><br>
@@ -258,7 +258,7 @@
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
       <script>
-        initDB();
+          initDB();
         
         function shuffleArray(array) {
            for(var i=array.length-1;i>0;i--){ 
@@ -693,7 +693,7 @@
         if (day < 10) day = "0" + day;
         var today = year + "-" + month + "-" + day;
         document.getElementById("date").value = today;
-        //showMainDiv(true)
+        //showMainDiv(true)         
       </script>
   </body>
 </html>
