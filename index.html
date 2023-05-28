@@ -69,7 +69,7 @@
   </head>
   <body>
     <div>
-      <div>
+      <div style="z-index:0">
         <div id="login-div" style="width: max-content; margin: 0 auto;">
           <h3 style="text-align: center;" class="slds-text-heading_large">Login</h3>
           <div class="slds-form-element">
@@ -87,7 +87,7 @@
                 <input type="password" id="password" required="" class="slds-input" />
               </div>
             </div>
-            <button class="slds-button slds-button_brand" onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;">Login</button>
+            <button class="slds-button slds-button_brand" onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;" id="login-btn">Login</button>
             <br>
             <progress class="slds-align_absolute-center" id="login-progress"></progress>
           </div>
@@ -162,7 +162,7 @@
                   </div>
                 </div>
                 <label class="slds-form-element__label">Enter Milk rate</label>
-                <input class="slds-input" type="number" id="milk-price">
+                <input class="slds-input" type="number" id="milk-price" aria-invalid="true">
                 <br>
                 <br>
                 <button onclick="calculateResult();" class="slds-button slds-button_brand slds-align_absolute-center">Submit</button>
@@ -221,6 +221,24 @@
             </button>
           </div>
           </div>
+        </div>        
+        <div>
+            
+        </div>
+            <section id="modal" style="display:none" role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open">
+                <div style="z-index:2; position: absolute; left: 50%; top:50%; right: 50%">
+                    <div id="spinner" class="demo-only" style="height:6rem;position:relative;display:none;">
+                        <div class="slds-spinner_container">
+                            <div role="status" class="slds-spinner slds-spinner_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                </div>
+            </section>
+            <div id="backdrop" style="display: none;" class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        
         </div>
       </div>
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -229,6 +247,21 @@
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
       <script>
         initDB();
+        
+        function showSpinner(show){
+            var backdrop = document.getElementById('backdrop');
+            var spinner = document.getElementById('spinner');
+            var modal = document.getElementById('modal');
+            if(show){
+                backdrop.style.display = 'block';
+                spinner.style.display = 'block';
+                modal.style.display = 'block';
+            } else {
+                backdrop.style.display = 'none';
+                spinner.style.display = 'none';
+                modal.style.display = 'none';
+            }
+        }
         
         function handleTotalCanWeight(){
             
@@ -258,10 +291,11 @@
         }
 
         function getBill(reqDate) {
-          document.getElementById('get-bill-progress').style.display = 'block';
+            if(reqDate!=null && reqDate!=''){
+                showSpinner(true);
           db.collection("Milk Biller").doc(reqDate).get().then((doc) => {
             if (doc.exists) {
-                document.getElementById('get-bill-progress').style.display = 'none';
+                
                 var dairyName = doc.data().Milk_Partner;
                 var date = doc.data().Date;
                 var am_pm = doc.data().AM_PM;
@@ -286,15 +320,19 @@
                 document.getElementById('whatsapp-send').addEventListener('click', () => {
                     window.location.href = createWhatsAppLink(result_wa);
                 });
+                showSpinner(false);
             } 
             else {
-                document.getElementById('get-bill-progress').style.display = 'none';
+                showSpinner(false);
                 alert("No bill found");
             }
           }).catch((error) => {
+              showSpinner(false);
             console.log("Error getting document:", error);
-            document.getElementById('get-bill-progress').style.display = 'none';
           });
+            }else{
+                alert('Select Bill date');
+            }
         }
         if (sessionStorage.getItem('login-status') == null || sessionStorage.getItem('login-status') == false) {
           showLoginDiv(true);
@@ -303,35 +341,62 @@
           showLoginDiv(false);
           showMainDiv(true);
         }
+        
+        function validateLogin(){
+            var loginValidation = [];
+            
+            var email = document.getElementById('email');
+            var password = document.getElementById('password');
+            
+            if(email.value == '' || email.value==null){
+                email.classList.add('slds-has-error');
+                loginValidation.push(false);
+            }else{
+                email.classList.remove('slds-has-error');
+                loginValidation.push(true);
+            }
+            
+            if(password.value=='' || password.value==null){
+                password.classList.add('slds-has-error');
+                loginValidation.push(false);
+            }else{
+                password.classList.remove('slds-has-error');
+                loginValidation.push(true);
+            }
+            
+            var validation = (loginValidation.indexOf(false)==-1)?true:false;
+          return validation;
+        }
 
         function login() {
-          document.getElementById('login-progress').style.display = "block";
-          email = document.getElementById('email').value;
-          password = document.getElementById('password').value;
+             
+          email = document.getElementById('email');
+          password = document.getElementById('password');
           //alert(password); 
-          firebase.auth().signInWithEmailAndPassword(email, password).then((userCredential) => {
+          
+          if(validateLogin()){
+              document.getElementById('login-btn').disabled=true; 
+             showSpinner(true); firebase.auth().signInWithEmailAndPassword(email.value, password.value).then((userCredential) => {
             // Signed in
             var user = userCredential.user;
+           showSpinner(false); document.getElementById('login-btn').disabled=true;
             showLoginDiv(false);
-            document.getElementById('login-progress').style.display = "none";
-            try{
-                showMainDiv(true);
-                console.log('hello')
-            }catch(e){
-                console.log(e)
-            }
+            
+            showMainDiv(true);
             
             //alert(JSON.stringify(user))
             sessionStorage.setItem('login-status', true);
             // ...
           }).catch((error) => {
+          document.getElementById('login-btn').disabled=false;
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(error);
-            document.getElementById('login-progress').style.display = "none";
+            showSpinner(false);
             alert('You are not allowed to sign in. Kindly contact SVRMP about this error.');
           });
-          firebase.auth();
+          }
+          
         }
 
         function showLoginDiv(show) {
@@ -360,7 +425,7 @@
           var startDate = document.getElementById('start-date').value;
           var endDate = document.getElementById('end-date').value;
           if (startDate != null && endDate != null) {
-            document.getElementById('get-progress').style.display = 'block';
+            showSpinner(true);
             db.collection("Milk Biller").where("Date", ">=", startDate).where("Date", "<=", endDate).get().then((querySnapshot) => {
               querySnapshot.forEach((doc) => {
                 no_of_days++;
@@ -369,7 +434,7 @@
                 total_cans += doc.data().Cans_Count;
                 total_cans_weight += parseFloat(doc.data().Bill_Without_Can_Weight) - parseFloat(doc.data().Can_Weight);
               });
-              document.getElementById('get-progress').style.display = 'none';
+              showSpinner(false);
               document.getElementById('days_work_done').innerText = no_of_days;
               document.getElementById('total-cans').innerText = total_cans;
               document.getElementById('total-cans-weight').innerText = Intl.NumberFormat('en-IN').format(total_cans_weight);
@@ -380,6 +445,7 @@
               total_cans_weight = parseInt(0);
             }).catch((error) => {
               console.log("Error getting documents: ", error);
+              showSpinner(false);
             });
           }
         }
@@ -419,12 +485,53 @@
           textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
         }
 
+        
+        function validateSubmit(){
+            var noErrorsBeforeSubmit = [];
+            var weights = document.getElementById('weights');
+          var result = document.getElementById('result');
+          let milk_rate =document.getElementById('milk-price');
+          let canWeight =document.getElementById('can-weight');
+          
+          if(!weights.value.length>0){
+              weights.classList.add('slds-has-error');
+              noErrorsBeforeSubmit.push(false);
+          }else{
+              weights.classList.remove('slds-has-error');
+              noErrorsBeforeSubmit.push(true);
+          }
+          
+          if(milk_rate.value=='' || milk_rate.value==0 || milk_rate.value==null){
+              milk_rate.classList.add('slds-has-error');
+              noErrorsBeforeSubmit.push(false);
+          }else{
+              milk_rate.classList.remove('slds-has-error');
+              noErrorsBeforeSubmit.push(true);
+          }
+          
+          if(canWeight.value=='' || canWeight.value==0 || canWeight.value==null){
+              canWeight.classList.add('slds-has-error');
+              noErrorsBeforeSubmit.push(false);
+          }else{
+              canWeight.classList.remove('slds-has-error');
+              noErrorsBeforeSubmit.push(true);
+          }
+          
+          
+          var validation = (noErrorsBeforeSubmit.indexOf(false)==-1)?true:false;
+          return validation;
+          
+        }
         function calculateResult() {
           var weights = document.getElementById('weights');
           var result = document.getElementById('result');
+          
           var resultText = weights.value;
-          result.innerHTML = alignBill(resultText);
+          
+          if(validateSubmit()){
+              result.innerHTML = alignBill(resultText);
           document.getElementById('result-div').style.display = 'block';
+          }
         }
 
         function computeTotal(quantities) {
@@ -490,6 +597,7 @@
         }
 
         function addToDB(date, milkpartner, weights, bill, canweight, milkrate, totalBill, am_pm) {
+            showSpinner(true);
           var db = firebase.firestore();
           db.collection("Milk Biller").doc(date).set({
             Date: date,
@@ -502,8 +610,10 @@
             Milk_Rate_Per_Litre: milkrate,
             Total_Bill: totalBill
           }).then(() => {
+          showSpinner(false);
             console.log("Document successfully written!");
           }).catch((error) => {
+          showSpinner(false);
             console.error("Error writing document: ", error);
           });
         }
@@ -554,11 +664,16 @@
   </body>
 </html>
 
+        
+                    
+                
+          
+
 
 
       
                 
                 
         
-        
-            
+
+
