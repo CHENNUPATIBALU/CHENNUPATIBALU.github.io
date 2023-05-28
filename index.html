@@ -65,13 +65,19 @@
       #login-progress, #get-bill-div {
         display: none;
       }
+      
+      input[type=email], input[type=password]{
+          width: 20em;
+          padding: 10px;
+      }
     </style>
   </head>
   <body>
     <div>
       <div style="z-index:0">
-        <div id="login-div" style="width: max-content; margin: 0 auto;">
+        <div id="login-div" style="width: max-content;" class="slds-align_absolute-center">
           <h3 style="text-align: center;" class="slds-text-heading_large">Login</h3>
+          <br>
           <div class="slds-form-element">
             <label class="slds-form-element__label" for="email">
               <abbr class="slds-required" title="required">* </abbr>Email </label>
@@ -228,7 +234,7 @@
           </div>
         </div>        
         <div>
-            
+        
         </div>
             <section id="modal" style="display:none" role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open">
                 <div style="z-index:2; position: absolute; left: 50%; top:50%; right: 50%">
@@ -237,9 +243,10 @@
                             <div role="status" class="slds-spinner slds-spinner_medium">
                                 <span class="slds-assistive-text">Loading</span>
                             <div class="slds-spinner__dot-a"></div>
-                        <div class="slds-spinner__dot-b"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <p style="transform: translate(-32%, -50%) rotate(-90deg);width: 320px;text-align: center; color: white" id="spinnerText"></p>
+                        </div>
                     </div>
-                </div>
                 </div>
             </section>
             <div id="backdrop" style="display: none;" class="slds-backdrop slds-backdrop_open" role="presentation"></div>
@@ -272,7 +279,7 @@
                 data.value = shuffledArray.join('\n');
             }
         }
-        function showSpinner(show){
+        function showSpinner(show,msg){
             var backdrop = document.getElementById('backdrop');
             var spinner = document.getElementById('spinner');
             var modal = document.getElementById('modal');
@@ -280,6 +287,7 @@
                 backdrop.style.display = 'block';
                 spinner.style.display = 'block';
                 modal.style.display = 'block';
+                document.getElementById('spinnerText').innerText = msg;
             } else {
                 backdrop.style.display = 'none';
                 spinner.style.display = 'none';
@@ -316,7 +324,7 @@
 
         function getBill(reqDate) {
             if(reqDate!=null && reqDate!=''){
-                showSpinner(true);
+                showSpinner(true,'Getting Bill');
           db.collection("Milk Biller").doc(reqDate).get().then((doc) => {
             if (doc.exists) {
                 
@@ -344,14 +352,14 @@
                 document.getElementById('whatsapp-send').addEventListener('click', () => {
                     window.location.href = createWhatsAppLink(result_wa);
                 });
-                showSpinner(false);
+                showSpinner(false,'');
             } 
             else {
-                showSpinner(false);
+                showSpinner(false,'');
                 alert("No bill found");
             }
           }).catch((error) => {
-              showSpinner(false);
+              showSpinner(false,'');
             console.log("Error getting document:", error);
           });
             }else{
@@ -400,23 +408,34 @@
           
           if(validateLogin()){
               document.getElementById('login-btn').disabled=true; 
-             showSpinner(true); firebase.auth().signInWithEmailAndPassword(email.value, password.value).then((userCredential) => {
+             showSpinner(true,'Signing in'); firebase.auth().signInWithEmailAndPassword(email.value, password.value).then((userCredential) => {
             // Signed in
             var user = userCredential.user;
-           showSpinner(false); document.getElementById('login-btn').disabled=true;
+           showSpinner(false,''); document.getElementById('login-btn').disabled=true;
             showLoginDiv(false);
             
             showMainDiv(true);
             
             //alert(JSON.stringify(user))
             sessionStorage.setItem('login-status', true);
+            var db = firebase.firestore();
+            db.collection("Milk Biller").orderBy("Date", "desc").limit(1).get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            var latest = doc.data().Date.split("-");
+            var dd = latest[2];
+            var mm = latest[1];
+            var yyyy = latest[0];
+            today = yyyy + "-" + mm + "-" + dd;
+            getBill(today);
+          });
+        });
             // ...
           }).catch((error) => {
           document.getElementById('login-btn').disabled=false;
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(error);
-            showSpinner(false);
+            showSpinner(false,'');
             alert('You are not allowed to sign in. Kindly contact SVRMP about this error.');
           });
           }
@@ -449,7 +468,7 @@
           var startDate = document.getElementById('start-date').value;
           var endDate = document.getElementById('end-date').value;
           if (startDate != null && endDate != null) {
-            showSpinner(true);
+            showSpinner(true,'Getting details');
             db.collection("Milk Biller").where("Date", ">=", startDate).where("Date", "<=", endDate).get().then((querySnapshot) => {
               querySnapshot.forEach((doc) => {
                 no_of_days++;
@@ -458,7 +477,7 @@
                 total_cans += doc.data().Cans_Count;
                 total_cans_weight += parseFloat(doc.data().Bill_Without_Can_Weight) - parseFloat(doc.data().Can_Weight);
               });
-              showSpinner(false);
+              showSpinner(false,'');
               document.getElementById('days_work_done').innerText = no_of_days;
               document.getElementById('total-cans').innerText = total_cans;
               document.getElementById('total-cans-weight').innerText = Intl.NumberFormat('en-IN').format(total_cans_weight);
@@ -469,7 +488,7 @@
               total_cans_weight = parseInt(0);
             }).catch((error) => {
               console.log("Error getting documents: ", error);
-              showSpinner(false);
+              showSpinner(false,'');
             });
           }
         }
@@ -621,7 +640,7 @@
         }
 
         function addToDB(date, milkpartner, weights, bill, canweight, milkrate, totalBill, am_pm) {
-            showSpinner(true);
+            showSpinner(true,'Calculating the Bill');
           var db = firebase.firestore();
           db.collection("Milk Biller").doc(date).set({
             Date: date,
@@ -634,10 +653,10 @@
             Milk_Rate_Per_Litre: milkrate,
             Total_Bill: totalBill
           }).then(() => {
-          showSpinner(false);
+          showSpinner(false,'');
             console.log("Document successfully written!");
           }).catch((error) => {
-          showSpinner(false);
+          showSpinner(false,'');
             console.error("Error writing document: ", error);
           });
         }
@@ -665,16 +684,7 @@
             document.getElementById('milk-seller-list').appendChild(option);
           });
         });
-        db.collection("Milk Biller").orderBy("Date", "desc").limit(1).get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            var latest = doc.data().Date.split("-");
-            var dd = latest[2];
-            var mm = latest[1];
-            var yyyy = latest[0];
-            today = yyyy + "-" + mm + "-" + dd;
-            getBill(today);
-          });
-        });
+        
         var date = new Date();
         var day = date.getDate();
         var month = date.getMonth() + 1;
