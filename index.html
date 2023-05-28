@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biller</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.21.1/styles/salesforce-lightning-design-system.min.css">
     <style>
       #main-div {
@@ -139,8 +139,13 @@
                 </table>
                 <label class="slds-form-element__label">Enter weights</label>
                 <textarea onkeyup="handleWeights();" class="slds-textarea" id="weights"></textarea>
-                <div class="slds-form-element__help"><span id="cans-count" class="slds-text_heading-small"></span></div>
-                <br>
+                <div class="slds-form-element__help">
+                    <div style="display: inline">
+                        <span id="cans-count" class="slds-text_heading-small"></span>
+                        <a class="slds-button" onclick="shuffleWeights()" style="float:right;"><i class="fa fa-shuffle"></i>&nbsp;Shuffle Weights</a>
+                    </div>
+                </div>
+                <br><br>
                 <div class="slds-grid slds-wrap">
                     <div class="slds-size_1-of-3">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small">
@@ -248,6 +253,25 @@
       <script>
         initDB();
         
+        function shuffleArray(array) {
+           for(var i=array.length-1;i>0;i--){ 
+               var j = Math.floor(Math.random() * (i + 1));
+                  
+               var temp = array[i];
+               array[i] = array[j];
+               array[j] = temp;
+           }
+          return array;
+        }
+        
+        function shuffleWeights(){
+            var data = document.getElementById('weights');
+            if(data.value.length>0){
+                var weights = data.value.split('\n');
+                var shuffledArray = shuffleArray(weights);
+                data.value = shuffledArray.join('\n');
+            }
+        }
         function showSpinner(show){
             var backdrop = document.getElementById('backdrop');
             var spinner = document.getElementById('spinner');
@@ -663,17 +687,3 @@
       </script>
   </body>
 </html>
-
-        
-                    
-                
-          
-
-
-
-      
-                
-                
-        
-
-
