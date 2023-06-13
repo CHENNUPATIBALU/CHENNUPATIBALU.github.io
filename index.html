@@ -70,6 +70,11 @@
           width: 20em;
           padding: 10px;
       }
+      
+      td{
+          width: 100%;
+          margin: 4px
+      }
     </style>
   </head>
   <body>
@@ -180,6 +185,24 @@
               </div>
             </div>
             <div id="tab-default-2" class="slds-tabs_default__content" role="tabpanel" aria-labelledby="tab-default-2__item">
+                <div style="margin: 5px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <input placeholder="Select date" type ="date" id="pilldate" class="slds-input">
+                            </td>
+                            <td>
+                                <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="addPill(document.getElementById('pilldate').value)">+</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div id="dates-form" style="display:none; margin: 5px;" class="slds-pill_container"></div>
+    
+                <div>
+                    <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="getTotalBill()">Compute Bill</button>
+                </div>
               <div id="date-range-div">
                 <p>
                   <b>Start date</b>: <input type="date" style="margin: 4px;" class="slds-input" id="start-date">
@@ -252,6 +275,7 @@
             <div id="backdrop" style="display: none;" class="slds-backdrop slds-backdrop_open" role="presentation"></div>
         
         </div>
+        <div id="demo" style="display:none;"></div>
       </div>
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -259,7 +283,51 @@
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
       <script>
           initDB();
-        
+          
+        //getLocation();
+        function getLocation(){
+            showSpinner(true, 'Please wait. We are setting up the things')
+            var req = new XMLHttpRequest();
+        req.open('GET','http://ipinfo.io',true);
+        req.send();
+        req.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+            var htmlText = req.responseText;
+            document.getElementById('demo').innerHTML = htmlText;
+            var json = JSON.parse(document.getElementById('__NEXT_DATA__').innerHTML);
+            if(json!=null){
+                var locReq = new XMLHttpRequest();
+ locReq.open('GET',"https://ipapi.co/"+json.props.pageProps.userIp+"/json",true);
+                locReq.send();
+                locReq.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var locationData = locReq.responseText;
+                        //console.log(JSON.stringify(locationData));
+                        sessionStorage.setItem('user_location',locationData);
+                        var db = firebase.firestore();
+                        
+                        const date = new Date();
+
+                        let day = date.getDate();
+                        let month = date.getMonth() + 1;
+                        let year = date.getFullYear();
+
+                        let currentDate = `${day}-${month}-${year} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}`;
+                        console.log(currentDate); // "17-6-2022"
+          db.collection("Milk Biller Logins").doc(currentDate).set(
+             JSON.parse(sessionStorage.getItem('user_location'))
+          ).then(() => {
+            showSpinner(false,'');
+            console.log("User location captured!");
+          }).catch((error) => {
+          showSpinner(false,'');
+            console.error("Error writing document: ", error);
+          });
+                    }
+                 }
+            }
+            }}
+        }
         function shuffleArray(array) {
            for(var i=array.length-1;i>0;i--){ 
                var j = Math.floor(Math.random() * (i + 1));
@@ -326,6 +394,7 @@
             if(reqDate!=null && reqDate!=''){
                 showSpinner(true,'Getting Bill');
           db.collection("Milk Biller").doc(reqDate).get().then((doc) => {
+              
             if (doc.exists) {
                 
                 var dairyName = doc.data().Milk_Partner;
@@ -351,8 +420,11 @@
                 document.getElementById('result').innerHTML = result_div;
                 document.getElementById('whatsapp-send').addEventListener('click', () => {
                     window.location.href = createWhatsAppLink(result_wa);
+                    
                 });
                 showSpinner(false,'');
+                pilldates[date] = totalAmount;
+                
             } 
             else {
                 showSpinner(false,'');
@@ -365,6 +437,7 @@
             }else{
                 alert('Select Bill date');
             }
+            return null;
         }
         if (sessionStorage.getItem('login-status') == null || sessionStorage.getItem('login-status') == false) {
           showLoginDiv(true);
@@ -411,6 +484,7 @@
              showSpinner(true,'Signing in'); firebase.auth().signInWithEmailAndPassword(email.value, password.value).then((userCredential) => {
             // Signed in
             var user = userCredential.user;
+            
            showSpinner(false,''); document.getElementById('login-btn').disabled=true;
             showLoginDiv(false);
             
@@ -427,6 +501,7 @@
             var yyyy = latest[0];
             today = yyyy + "-" + mm + "-" + dd;
             getBill(today);
+            getLocation();
           });
         });
             // ...
@@ -468,7 +543,7 @@
           var startDate = document.getElementById('start-date').value;
           var endDate = document.getElementById('end-date').value;
           if (startDate != null && endDate != null) {
-            showSpinner(true,'Getting details');
+            showSpinner(true,'Please wait. Getting details');
             db.collection("Milk Biller").where("Date", ">=", startDate).where("Date", "<=", endDate).get().then((querySnapshot) => {
               querySnapshot.forEach((doc) => {
                 no_of_days++;
@@ -477,7 +552,7 @@
                 total_cans += doc.data().Cans_Count;
                 total_cans_weight += parseFloat(doc.data().Bill_Without_Can_Weight) - parseFloat(doc.data().Can_Weight);
               });
-              showSpinner(false,'');
+              
               document.getElementById('days_work_done').innerText = no_of_days;
               document.getElementById('total-cans').innerText = total_cans;
               document.getElementById('total-cans-weight').innerText = Intl.NumberFormat('en-IN').format(total_cans_weight);
@@ -486,6 +561,7 @@
               amount_spent = parseInt(0);
               total_cans = parseInt(0);
               total_cans_weight = parseInt(0);
+              showSpinner(false,'');
             }).catch((error) => {
               console.log("Error getting documents: ", error);
               showSpinner(false,'');
@@ -565,13 +641,15 @@
           return validation;
           
         }
-        function calculateResult() {
+        async function calculateResult() {
           var weights = document.getElementById('weights');
           var result = document.getElementById('result');
           
           var resultText = weights.value;
           
           if(validateSubmit()){
+              showSpinner(true,'Computing the bill');          
+              await sleep(2);
               result.innerHTML = alignBill(resultText);
           document.getElementById('result-div').style.display = 'block';
           }
@@ -612,12 +690,14 @@
             weightsString += weights[i] + "%0A";
             weightsString1 += weights[i] + " </br>";
           }
+          
           var result_wa = createWhatsappString(dairyName, date, am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate);
           var result_div = createDivString(dairyName, date, am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount);
           addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
           addToLS(result_div, result_wa);
           document.getElementById('whatsapp-send').addEventListener('click', () => {
             window.location.href = createWhatsAppLink(result_wa);
+            
           });
           return result_div;
         }
@@ -628,6 +708,10 @@
 
         function createDivString(dairyName, date, am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount) {
           return "<b>"+dairyName+"</b></br> <b> Date </b>: "+date+" <i> ("+am_pm+") </i> </br> </br>"+weightsString1+"-------------  </br> <b> "+bill+" </b> </br>"+"–   <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>-------------  </br>"+weight+" × "+milk_rate+"  </br>-------------  </br> <b> ₹"+totalAmount+" / - </b>";
+        }
+        
+        function sleep(ms) {       
+            return new Promise(resolve => setTimeout(resolve, ms*1000));    
         }
 
         function createWhatsAppLink(message) {
@@ -640,7 +724,8 @@
         }
 
         function addToDB(date, milkpartner, weights, bill, canweight, milkrate, totalBill, am_pm) {
-            showSpinner(true,'Calculating the Bill');
+            showSpinner(true,'Finalising the Bill');
+           
           var db = firebase.firestore();
           db.collection("Milk Biller").doc(date).set({
             Date: date,
@@ -693,7 +778,88 @@
         if (day < 10) day = "0" + day;
         var today = year + "-" + month + "-" + day;
         document.getElementById("date").value = today;
-        //showMainDiv(true)         
+       // showMainDiv(true)     
+        
+        var pilldates = {};
+    
+    function addPill(date){
+        var form = document.getElementById('dates-form');
+        if(date!=null && date!=''){
+            form.style.display = 'block';
+            var pill = document.createElement('span');
+            pill.classList.add('slds-pill');
+            pill.classList.add('slds-pill_link');
+            var pillLink = document.createElement('a');
+            pillLink.classList.add('slds-pill__action');
+            pillLink.setAttribute('title',date);
+            var pillLabel = document.createElement('span');
+            pillLabel.classList.add('slds-pill__label');
+            pillLabel.innerText = date;
+            pillLink.appendChild(pillLabel);
+            pill.appendChild(pillLink);
+            var pillRemoveBtn = document.createElement('button');
+            pillRemoveBtn.classList.add('slds-button');
+            pillRemoveBtn.classList.add('slds-button_icon');
+            pillRemoveBtn.classList.add('slds-button_icon');
+            pillRemoveBtn.classList.add('slds-pill__remove');
+        
+            var pillBtnIcon = document.createElement('i');
+            pillBtnIcon.classList.add('fas');
+            pillBtnIcon.classList.add('fa-close');
+            pillRemoveBtn.appendChild(pillBtnIcon);
+            pill.appendChild(pillRemoveBtn);
+            console.log(JSON.stringify(form.childNodes))
+            if(Object.keys(pilldates).length!=0 && Object.keys(pilldates).indexOf(date)!=-1){
+                pill = null;
+                //pilldates[date] = {}; 
+                alert(date+' is already selected');
+            }else{
+                form.appendChild(pill);
+                getBill(date);
+            }
+            console.log('Add',JSON.stringify(pilldates))
+            pillRemoveBtn.addEventListener('click',function(){
+                form.removeChild(pill);
+                delete pilldates[date];
+                if(Object.keys(dates).length==0){
+                    form.style.display = 'none';
+                } console.log('Remove',JSON.stringify(pilldates))
+            });
+        }
+    }
+    
+    function addRow(date){
+        if(date!=null && date!=''){
+            var form = document.getElementById('dates-form');
+            var dateDiv = document.createElement('div');
+            dateDiv.innerHTML = date;
+            dates[date] = {};
+            
+            form.appendChild(dateDiv);
+        }
+    }
+    
+    function getTotalBill(){
+        var totalBill = parseFloat('0');
+        var bill = '';
+        Object.keys(pilldates).forEach(d=>{
+          var pillamount = pilldates[d].split(',');
+          var amount = pillamount[0]+''+pillamount[1]; totalBill+=parseFloat(amount);
+          var formattedBill = Intl.NumberFormat('en-IN').format(totalBill);
+          bill+=d+' --> ₹ '+pilldates[d]+'/-%0A';    
+        });
+        bill+='          ———————————%0A';
+        
+        
+        var formattedBill = Intl.NumberFormat('en-IN').format(totalBill); console.log(JSON.stringify(pilldates),formattedBill);
+        
+        bill+='      Balance = *₹ '+formattedBill+'/-*';
+        var waStr = '';
+        var confirmSend=confirm('Are you willing to send this bill on WhatsApp?');
+        if(confirmSend){
+            window.location.href = createWhatsAppLink(bill);
+        }
+    }    
       </script>
   </body>
 </html>
