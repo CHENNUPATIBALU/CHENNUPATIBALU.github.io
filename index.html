@@ -192,7 +192,7 @@
                                 <input placeholder="Select date" type ="date" id="pilldate" class="slds-input">
                             </td>
                             <td>
-                                <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="addPill(document.getElementById('pilldate').value)">+</button>
+                                <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="addPill(document.getElementById('pilldate').value,'')">+</button>
                             </td>
                         </tr>
                     </table>
@@ -423,8 +423,6 @@
                     
                 });
                 showSpinner(false,'');
-                pilldates[date] = totalAmount;
-                addPill(date);
             } 
             else {
                 showSpinner(false,'');
@@ -437,7 +435,6 @@
             }else{
                 alert('Select Bill date');
             }
-            return null;
         }
         if (sessionStorage.getItem('login-status') == null || sessionStorage.getItem('login-status') == false) {
           showLoginDiv(true);
@@ -500,7 +497,7 @@
             var mm = latest[1];
             var yyyy = latest[0];
             today = yyyy + "-" + mm + "-" + dd;
-            getBill(today);
+            getBill(today,false);
             getLocation();
           });
         });
@@ -778,15 +775,16 @@
         if (day < 10) day = "0" + day;
         var today = year + "-" + month + "-" + day;
         document.getElementById("date").value = today;
-       // showMainDiv(true)     
+        //showMainDiv(true)     
         
         var pilldates = {};
     
-    function addPill(date){
+    function addPill(date,amount){
         var form = document.getElementById('dates-form');
         if(date!=null && date!=''){
             form.style.display = 'block';
             var pill = document.createElement('span');
+            pill.setAttribute('id',date);
             pill.classList.add('slds-pill');
             pill.classList.add('slds-pill_link');
             var pillLink = document.createElement('a');
@@ -810,56 +808,78 @@
             pill.appendChild(pillRemoveBtn);
             console.log(JSON.stringify(form.childNodes))
             if(Object.keys(pilldates).length!=0 && Object.keys(pilldates).indexOf(date)!=-1){
-                pill = null;
+              //  pill = null;
                 //pilldates[date] = {}; 
-               // alert(date+' is already selected');
+                alert(date+' is already selected');
             }else{
+                pilldates[date] = amount;
                 form.appendChild(pill);
-                getBill(date);
+                
             }
             console.log('Add',JSON.stringify(pilldates))
             pillRemoveBtn.addEventListener('click',function(){
                 form.removeChild(pill);
                 delete pilldates[date];
-                if(Object.keys(dates).length==0){
+                if(Object.keys(pilldates).length==0){
                     form.style.display = 'none';
                 } console.log('Remove',JSON.stringify(pilldates))
             });
         }
     }
     
-    function addRow(date){
-        if(date!=null && date!=''){
-            var form = document.getElementById('dates-form');
-            var dateDiv = document.createElement('div');
-            dateDiv.innerHTML = date;
-            dates[date] = {};
-            
-            form.appendChild(dateDiv);
-        }
-    }
-    
     function getTotalBill(){
         var totalBill = parseFloat('0');
         var bill = '';
+        showSpinner(true,'Getting Bill for selected dates');
+        let i=parseInt('0');
         Object.keys(pilldates).forEach(d=>{
-          var pillamount = pilldates[d].split(',');
-          var amount = pillamount[0]+''+pillamount[1]; totalBill+=parseFloat(amount);
-          var formattedBill = Intl.NumberFormat('en-IN').format(totalBill);
-          bill+=d+' --> ₹ '+pilldates[d]+'/-%0A';    
+            i++;
+          db.collection("Milk Biller").doc(d).get().then((doc) => {
+              
+            if (doc.exists) {
+                
+                var dairyName = doc.data().Milk_Partner;
+                var date = doc.data().Date;
+                
+                var totalAmount = doc.data().Total_Bill;
+                
+                pilldates[d] = totalAmount;
+                
+                var pillamount = pilldates[d].split(',');
+                var amount = pillamount[0]+''+pillamount[1]; totalBill+=parseFloat(amount);
+                var formattedBill = Intl.NumberFormat('en-IN').format(totalBill);
+                bill+=d+' --> ₹ '+pilldates[d]+'/-%0A';    
+                bill+='          ———————————%0A';
+         console.log(JSON.stringify(pilldates),formattedBill);
+        
+                bill+='      Balance = *₹ '+formattedBill+'/-*';
+                var waStr = '';
+                
+                if(i==Object.keys(pilldates).length){
+                    var confirmSend=confirm('Are you willing to send this bill on WhatsApp?');
+                    if(confirmSend){
+                        showSpinner(false,'');
+                        window.location.href = createWhatsAppLink(bill);
+                    }else{
+                        showSpinner(false,'');
+                    }
+                }
+            } 
+            else {
+                showSpinner(false,'');
+                delete pilldates[d];
+                var form = document.getElementById('dates-form');
+                var pill = document.getElementById(d);
+                form.removeChild(pill);
+                alert("No bill found for "+d);
+            }
+          }).catch((error) => {
+              showSpinner(false,'');
+              console.log("Error getting document:", error);
+          });
         });
-        bill+='          ———————————%0A';
-        
-        
-        var formattedBill = Intl.NumberFormat('en-IN').format(totalBill); console.log(JSON.stringify(pilldates),formattedBill);
-        
-        bill+='      Balance = *₹ '+formattedBill+'/-*';
-        var waStr = '';
-        var confirmSend=confirm('Are you willing to send this bill on WhatsApp?');
-        if(confirmSend){
-            window.location.href = createWhatsAppLink(bill);
-        }
     }    
       </script>
   </body>
-</html>
+  </html>
+  
