@@ -827,15 +827,19 @@
         }
     }
     
+    var bill = '';
+    var formattedBill = '';
     function getTotalBill(){
+        bill = '';
+        formattedBill = '';
         var totalBill = parseFloat('0');
-        var bill = '';
+        
         showSpinner(true,'Getting Bill for selected dates');
         let i=parseInt('0');
         Object.keys(pilldates).forEach(d=>{
-            i++;
+            
           db.collection("Milk Biller").doc(d).get().then((doc) => {
-              
+              i++;
             if (doc.exists) {
                 
                 var dairyName = doc.data().Milk_Partner;
@@ -847,19 +851,23 @@
                 
                 var pillamount = pilldates[d].split(',');
                 var amount = pillamount[0]+''+pillamount[1]; totalBill+=parseFloat(amount);
-                var formattedBill = Intl.NumberFormat('en-IN').format(totalBill);
+                formattedBill = Intl.NumberFormat('en-IN').format(totalBill);
                 bill+=d+' --> ₹ '+pilldates[d]+'/-%0A';    
-                bill+='          ———————————%0A';
+                
+                var waStr = '';
+                
+               console.log(bill); 
+               if(i==Object.keys(pilldates).length){
+                console.log('Bill',bill,'Index:',i)
+                    bill+='          ———————————%0A';
          console.log(JSON.stringify(pilldates),formattedBill);
         
                 bill+='      Balance = *₹ '+formattedBill+'/-*';
-                var waStr = '';
-                
-                if(i==Object.keys(pilldates).length){
                     var confirmSend=confirm('Are you willing to send this bill on WhatsApp?');
                     if(confirmSend){
                         showSpinner(false,'');
                         window.location.href = createWhatsAppLink(bill);
+                        
                     }else{
                         showSpinner(false,'');
                     }
@@ -871,13 +879,16 @@
                 var form = document.getElementById('dates-form');
                 var pill = document.getElementById(d);
                 form.removeChild(pill);
-                alert("No bill found for "+d);
+                //alert("No bill found for "+d);
             }
           }).catch((error) => {
               showSpinner(false,'');
               console.log("Error getting document:", error);
           });
+          console.log(bill,i)
+          
         });
+        
     }    
       </script>
   </body>
