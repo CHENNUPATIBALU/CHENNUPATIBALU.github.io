@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@salesforce-ux/design-system@2.11.5/assets/styles/salesforce-lightning-design-system.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="slds-container slds-p-around_large">
+        <h2 class="slds-text-heading_large">Billing App</h2>
+        <form>
+            <div class="slds-form_stacked">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="billNumber">Bill Number</label>
+                        <div class="slds-form-element__control">
+                            <input type="text" id="billNumber" class="slds-input" placeholder="Enter Bill Number">
+                        </div>
+                </div>
+
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="customerName">Customer Name</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="customerName" class="slds-input" placeholder="Enter Customer Name">
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="productDate">Bill Date</label>
+                    <div class="slds-form-element__control">
+                        <input type="date" id="productDate" class="slds-input" placeholder="Select Product Date">
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="phoneNumber">Phone Number</label>
+                    <div class="slds-form-element__control">
+                        <input type="tel" id="phoneNumber" class="slds-input" placeholder="Enter Phone Number">
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="productName">Product Name</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="productName" class="slds-input" placeholder="Enter Product Name">
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="quantity">Quantity</label>
+                    <div class="slds-form-element__control">
+                        <input type="number" id="quantity" class="slds-input" placeholder="Enter Quantity">
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="pricePerUnit">Price Per Unit</label>
+                    <div class="slds-form-element__control">
+                        <input type="number" id="pricePerUnit" class="slds-input" placeholder="Enter Price Per Unit">
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="totalPrice">Total Price</label>
+                    <div class="slds-form-element__control">
+                        <input type="number" id="totalPrice" class="slds-input" readonly>
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <button type="button" class="slds-button slds-button_brand" onclick="calculateTotal()">Calculate Total</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <div class="slds-box">
+            <h3 class="slds-section-title--divider">Products Table</h3>
+            <table class="slds-table slds-table_bordered slds-table_resizable-cols slds-table_fixed-layout">
+                <thead>
+                    <tr>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Product Date</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price Per Unit</th>
+                        <th scope="col">Total Price</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Table rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <button class="slds-button slds-button_success" onclick="addProductToLocalstorage()">Add Product</button>
+        <button class="slds-button slds-button_success" onclick="printTable()">Print</button>
+        
+    </div>
+    
+    <script>
+        // Function to calculate total and add row to the table
+        function calculateTotal() {
+            const productName = document.getElementById('productName').value.trim();
+            const productDate = document.getElementById('productDate').value.trim();
+            const quantity = parseFloat(document.getElementById('quantity').value);
+            const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value);
+
+            // Validate input data
+            if (productName === '' || productDate === '' || isNaN(quantity) || isNaN(pricePerUnit) || quantity <= 0 || pricePerUnit <= 0) {
+                alert('Please fill in valid product details before adding.');
+                return;
+            }
+
+            // Calculate total price
+            const totalPrice = (quantity * pricePerUnit).toFixed(2);
+
+            // Create a new row in the table for the entered product details
+            const tableBody = document.getElementById('productTableBody');
+            const newRow = tableBody.insertRow(-1);
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+            const cell3 = newRow.insertCell(2);
+            const cell4 = newRow.insertCell(3);
+            const cell5 = newRow.insertCell(4);
+            const cell6 = newRow.insertCell(5);
+
+            cell1.innerHTML = productName;
+            cell2.innerHTML = productDate;
+            cell3.innerHTML = quantity;
+            cell4.innerHTML = pricePerUnit.toFixed(2);
+            cell5.innerHTML = totalPrice;
+
+            // Create a "Delete" button in the new row
+            const deleteButton = document.createElement("button");
+            deleteButton.innerHTML = "Delete";
+            deleteButton.className = "slds-button slds-button_neutral";
+            deleteButton.onclick = function () {
+                deleteRow(newRow);
+            };
+            cell6.appendChild(deleteButton);
+
+            // Clear input fields
+            document.getElementById('productName').value = '';
+            
+            document.getElementById('quantity').value = '';
+            document.getElementById('pricePerUnit').value = '';
+            document.getElementById('totalPrice').value = '';
+            const billNumber = document.getElementById('billNumber').value.trim();
+             const product = {
+                 billTo: document.getElementById('customerName').value.trim(),
+                name: productName,
+                date: productDate,
+                quantity: quantity,
+                pricePerUnit: pricePerUnit,
+                totalPrice: totalPrice,
+                billNumber: billNumber
+            };
+
+            // Get existing products from localStorage or create an empty array
+            const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+            // Add the new product to the array
+            existingProducts.push(product);
+
+            // Store the updated products array in localStorage
+            localStorage.setItem('products', JSON.stringify(existingProducts));
+            
+        }
+
+        // Function to delete a row from the table
+        function deleteRow(row) { 
+            const tableBody = document.getElementById('productTableBody');
+            const rowIndex = row.rowIndex; 
+            if (rowIndex >= 0 && rowIndex < tableBody.rows.length){ 
+            tableBody.deleteRow(rowIndex); 
+            } else { 
+            console.error('Invalid row index:', rowIndex); 
+            }
+        }
+
+        // Function to add product to localStorage
+function addProductToLocalstorage() {
+    const productName = document.getElementById('productName').value.trim();
+    const productDate = document.getElementById('productDate').value.trim();
+    const quantity = parseFloat(document.getElementById('quantity').value);
+    const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value);
+    const billNumber = document.getElementById('billNumber').value.trim(); // Capture Bill Number
+
+    // Validate input data
+    if (productName === '' || productDate === '' || isNaN(quantity) || isNaN(pricePerUnit) || quantity <= 0 || pricePerUnit <= 0 || billNumber === '') {
+        alert('Please fill in valid product details before adding.');
+        return;
+    }
+
+    // Calculate total price
+    const totalPrice = (quantity * pricePerUnit).toFixed(2);
+
+    // Create a product object
+    const product = {
+        billTo: document.getElementById('customerName').value.trim(),
+        name: productName,
+        date: productDate,
+        quantity: quantity,
+        pricePerUnit: pricePerUnit,
+        totalPrice: totalPrice,
+        billNumber: billNumber
+    };
+
+    // Get existing products from localStorage or create an empty array
+    const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+    // Add the new product to the array
+    existingProducts.push(product);
+
+    // Store the updated products array in localStorage
+    localStorage.setItem('products', JSON.stringify(existingProducts));
+
+    // Clear input fields
+    document.getElementById('productName').value = '';
+    document.getElementById('productDate').value = '';
+    document.getElementById('quantity').value = '';
+    document.getElementById('pricePerUnit').value = '';
+    document.getElementById('totalPrice').value = '';
+    document.getElementById('billNumber').value = ''; // Clear Bill Number input field
+
+    // Display a success message
+    alert('Product added successfully.');
+}
+
+
+        // Function to load products from localStorage and populate the table
+        function loadProductsFromLocalStorage() {
+            const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+            // Populate the table with existing products
+            const tableBody = document.getElementById('productTableBody');
+            existingProducts.forEach((product) => {
+                const newRow = tableBody.insertRow(-1);
+                const cell1 = newRow.insertCell(0);
+                const cell2 = newRow.insertCell(1);
+                const cell3 = newRow.insertCell(2);
+                const cell4 = newRow.insertCell(3);
+                const cell5 = newRow.insertCell(4);
+                const cell6 = newRow.insertCell(5);
+
+                cell1.innerHTML = product.name;
+                cell2.innerHTML = product.date;
+                cell3.innerHTML = product.quantity;
+                cell4.innerHTML = product.pricePerUnit.toFixed(2);
+                cell5.innerHTML = product.totalPrice;
+
+                // Create a "Delete" button in the row
+                const deleteButton = document.createElement("button");
+                deleteButton.innerHTML = "Delete";
+                deleteButton.className = "slds-button slds-button_neutral";
+                deleteButton.onclick = function () {
+                    deleteRow(newRow);
+                };
+                cell6.appendChild(deleteButton);
+            });
+        }
+
+        // Call the function to load products from localStorage when the page loads
+        loadProductsFromLocalStorage();
+        
+    // Function to print the table
+    function printTable() {
+        // Get the table data from localStorage
+        const products = JSON.parse(localStorage.getItem('products'));
+
+        // Check if there are products to print
+        if (products && products.length > 0) {
+            // Construct the URL parameters with table data
+            const urlParams = new URLSearchParams();
+            products.forEach((product, index) => {
+                urlParams.append(`product${index + 1}`, JSON.stringify(product));
+            });
+
+            // Open the "Bill.html" page with URL parameters
+            const printWindow = window.open('Bill.html', '_blank');
+            if (printWindow) {
+                printWindow.focus();
+            } else {
+                alert('Please allow pop-ups for printing.');
+            }
+        } else {
+            alert('No products to print.');
+        }
+    }
+    </script>
+</body>
+</html>

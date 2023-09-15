@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+    <title>Invoice</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+        /* Your CSS styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #333; /* Text color */
+        }
+
+        .container {
+            width: 892px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            font-family: 'Helvetica', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .address {
+            font-size: 14px;
+            color: #666; /* Lighter text color */
+            margin-top: 5px;
+        }
+
+        .invoice-details {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #333; /* Text color */
+        }
+
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            border: 1px solid #ddd; /* Light gray border */
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+            color: #333; /* Text color */
+        }
+
+        .table th {
+            background-color: #f2f2f2;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: right;
+            color: #333; /* Text color */
+        }
+
+        .signature {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #666; /* Lighter text color */
+        }
+
+        /* Headings */
+        h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333; /* Text color */
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333; /* Text color */
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333; /* Text color */
+        }
+
+        /* Additional text styles */
+        .bold {
+            font-weight: bold;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div style="display: inline-flex;">
+      <img src="https://res.cloudinary.com/chennupati-balu/image/upload/v1640759470/SriVenkataRamanaMilkProducts/assets/web-logo.png" alt="logo" width="100">
+      <div style="position: absolute; top: 20px; left: 150px;">
+          <h1 class="header">
+        Sri Venkata Ramana Milk Products
+          </h1>  
+          <p class="address">
+        BC Colony, Vinjamur, Andhra Pradesh - 524228 <br />
+        Mobile No - 9985353247
+        </p>
+      </div>
+    </div>
+    
+    <h2 class="invoice-details" style="float: right; font-size: 20px">
+        INVOICE
+    </h2>
+    </br>
+    <div class="invoice-details">
+        <p class="bold"><u>Bill Details</u></p>
+        <p>Bill Number: <span id="billNumber"  class="bold"></span></p>
+        <p>Bill Date: <span class="bold" id="billDate"></span></p>
+        <p>Bill Type: <span id="billType" class="bold"></span></p>
+        <p>Bill To: <span id="billTo" class="bold"></span></p>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>Product/Service Name</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Amount</th>
+        </tr>
+        </thead>
+        <tbody id="tableBody">
+        <!-- Table rows will be populated dynamically -->
+        </tbody>
+    </table>
+    <div class="total">
+        <p class="bold">TOTAL: <span id="totalAmount"></span></p>
+    </div>
+</div>
+
+<!-- JavaScript to populate table rows from URL parameters -->
+<script>
+    function getURLParameters() {
+        var params = {};
+        var urlParams = window.location.search.substring(1).split('&');
+        for (var i = 0; i < urlParams.length; i++) {
+            var param = urlParams[i].split('=');
+            params[param[0]] = decodeURIComponent(param[1]);
+        }
+        return params;
+    }
+
+    var urlParams = getURLParameters();
+    console.log(JSON.stringify(urlParams))   
+
+    // Populate table rows
+    var tableBody = document.getElementById("tableBody");
+    if (urlParams) {
+       // console.log(JSON.parse(urlParams));
+        var rowData = JSON.parse(decodeURIComponent(localStorage.getItem('products')));
+        document.getElementById("billNumber").textContent = rowData[0].billNumber || "";
+    document.getElementById("billDate").textContent = rowData[0].date || "";
+    document.getElementById("billType").textContent = "Customer Copy";
+    document.getElementById("billTo").textContent = rowData[0].billTo || "";
+        console.log(rowData[0]);
+        let sum = 0;
+        for (var i = 0; i < rowData.length; i++) {
+            var row = document.createElement("tr");
+            
+            row.innerHTML = `
+                <td>${i+1}</td>
+                <td>${rowData[i].name}</td>
+                <td>${rowData[i].quantity}</td>
+                <td>${rowData[i].pricePerUnit}</td>
+                <td>₹ ${rowData[i].totalPrice}/-</td>
+            `;
+            tableBody.appendChild(row);
+            sum+=parseFloat(rowData[i].totalPrice);
+        }
+       
+        document.getElementById("totalAmount").textContent = '₹ '+parseFloat(sum).toFixed(2)+'/-';
+        document.title = 'Invoice_'+rowData[0].billNumber+'_'+rowData[0].date;
+    }
+</script>
+</body>
+</html>
