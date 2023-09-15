@@ -26,9 +26,7 @@
                 <label class="slds-form-element__label" for="companyName">Bakery Name:</label>
                 <div class="slds-form-element__control">
                   <select id="companyName" required class="slds-select">
-                    <option value="Company A">Company A</option>
-                    <option value="Company B">Company B</option>
-                    <option value="Company C">Company C</option>
+                    
                   </select>
                 </div>
               </div>
@@ -149,7 +147,7 @@
               var line = "\t\t\t\t\t\t\t\t—————————";
               message += "\n" + line + "\n\t\t\t\t\t\t\t\t\t" + totalWeight.toFixed(3) + " × " + perKgRate;
               let totalBill = totalWeight * perKgRate;
-              message += "\n" + line + "\n\t\t\t\t\t\t\t\t\t\t*₹ " + totalBill + "/-*";
+              message += "\n" + line + "\n\t\t\t\t\t\t\t\t\t\t*₹ " + Intl.NumberFormat('en-IN').format(totalBill) + "/-*";
               console.log('Total Bill=', totalBill);
               console.log('Message=\n' + message)
               // Customize the recipient's phone number (replace with the actual number)
@@ -158,7 +156,7 @@
               var whatsappLink = 'whatsapp://send?text=' + encodeURIComponent(message);
               console.log(whatsappLink);
               // Open the WhatsApp link in a new tab
-              window.open(whatsappLink, '_blank');
+              //window.open(whatsappLink, '_blank');
             });
           </script>
         </div>
@@ -243,6 +241,10 @@
         </div>
       </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <script>
       function navigateToInvoice() {
         var billTab = document.getElementById('tab-default-1');
@@ -431,6 +433,32 @@
           alert('No products to print.');
         }
       }
+      
+      function initDB() {
+          const firebaseConfig = {
+            apiKey: "AIzaSyABU3wrmKgVumYiW6MVBWn5CFg20k2LkiE",
+            authDomain: "srivenkataramanamilk-products.firebaseapp.com",
+            databaseURL: "https://srivenkataramanamilk-products-default-rtdb.firebaseio.com",
+            projectId: "srivenkataramanamilk-products",
+            storageBucket: "srivenkataramanamilk-products.appspot.com",
+            messagingSenderId: "305866360345",
+            appId: "1:305866360345:web:3919e57a4360fd2cdb0c88",
+            measurementId: "G-LCHPSC45B5"
+          };
+          firebase.initializeApp(firebaseConfig);
+        }
+        
+        initDB();
+        
+        var db = firebase.firestore();
+        db.collection("Kova Sellers").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            var option = document.createElement('option');
+            option.value = doc.data().Name + ", " + doc.data().Location;
+            option.innerText = doc.id;
+            document.getElementById('companyName').appendChild(option);
+          });
+        });
     </script>
   </body>
 </html>
