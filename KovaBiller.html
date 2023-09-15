@@ -77,7 +77,7 @@
           <script>
             document.getElementById('addButton').addEventListener('click', function() {
               var companyName = document.getElementById('companyName').value;
-              var date = document.getElementById('date').value;
+              var date = new Date(document.getElementById('date').value);
               var weight = document.getElementById('weight').value;
               var rate = document.getElementById('rate').value;
               // Validation here (e.g., check if fields are not empty)
@@ -92,7 +92,8 @@
               var cell5 = newRow.insertCell(4);
               var cell6 = newRow.insertCell(5);
               cell1.innerHTML = companyName;
-              cell2.innerHTML = date;
+              
+              cell2.innerHTML = date.getDate()+'-'+(date.getMonth()+1)+'-'+date.getFullYear();
               cell3.innerHTML = parseFloat(weight).toFixed(3);
               cell4.innerHTML = rate;
               cell5.innerHTML = '<button onclick = "editRow(this)"> Edit </button>';
@@ -309,10 +310,11 @@
         document.getElementById('pricePerUnit').value = '';
         document.getElementById('totalPrice').value = '';
         const billNumber = document.getElementById('billNumber').value.trim();
+        var date = productDate.getDate()+'-'+(productDate.getMonth()+1)+'-'+productDate.getFullYear();
         const product = {
           billTo: document.getElementById('customerName').value.trim(),
           name: productName,
-          date: productDate,
+          date: date,
           quantity: quantity,
           pricePerUnit: pricePerUnit,
           totalPrice: totalPrice,
@@ -350,11 +352,12 @@
         }
         // Calculate total price
         const totalPrice = (quantity * pricePerUnit).toFixed(2);
+        var date = productDate.getDate()+'-'+(productDate.getMonth()+1)+'-'+productDate.getFullYear();
         // Create a product object
         const product = {
           billTo: document.getElementById('customerName').value.trim(),
           name: productName,
-          date: productDate,
+          date: date,
           quantity: quantity,
           pricePerUnit: pricePerUnit,
           totalPrice: totalPrice,
