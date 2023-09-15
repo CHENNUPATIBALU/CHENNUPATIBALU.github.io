@@ -20,7 +20,7 @@
           </li>
         </ul>
         <div id="tab-default-1" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
-          <div class="slds-scope">
+          <div class="slds-scope slds-m-around_small">
             <form id="companyForm" class="slds-form">
               <div class="slds-form-element slds-is-required">
                 <label class="slds-form-element__label" for="companyName">Bakery Name:</label>
@@ -58,10 +58,10 @@
             <table id="dataTable" class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped">
               <thead>
                 <tr>
-                  <th class="slds-text-title_caps">Company Name</th>
+                  <th class="slds-text-title_caps slds-hide">Company Name</th>
                   <th class="slds-text-title_caps">Date</th>
                   <th class="slds-text-title_caps">Weight (kg)</th>
-                  <th class="slds-text-title_caps">Rate (₹ per kg)</th>
+                  <th class="slds-text-title_caps slds-hide">Rate (₹ per kg)</th>
                   <th class="slds-text-title_caps">Edit</th>
                   <th class="slds-text-title_caps">Delete</th>
                 </tr>
@@ -84,8 +84,10 @@
               var table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
               var newRow = table.insertRow(table.rows.length);
               var cell1 = newRow.insertCell(0);
+              cell1.classList.add('slds-hide');
               var cell2 = newRow.insertCell(1);
               var cell3 = newRow.insertCell(2);
+              cell3.classList.add('slds-hide');
               var cell4 = newRow.insertCell(3);
               var cell5 = newRow.insertCell(4);
               var cell6 = newRow.insertCell(5);
@@ -93,8 +95,8 @@
               cell2.innerHTML = date;
               cell3.innerHTML = parseFloat(weight).toFixed(3);
               cell4.innerHTML = rate;
-              cell5.innerHTML = ' < button onclick = "editRow(this)" > Edit < /button>';
-              cell6.innerHTML = ' < button onclick = "deleteRow(this)" > Delete < /button>';
+              cell5.innerHTML = '<button onclick = "editRow(this)"> Edit </button>';
+              cell6.innerHTML = '<button onclick = "deleteRow(this)"> Delete </button>';
               // Clear the form fields
               document.getElementById('date').value = '';
               document.getElementById('weight').value = '';
@@ -428,4 +430,4 @@
       }
     </script>
   </body>
-    </html>
+</html>
