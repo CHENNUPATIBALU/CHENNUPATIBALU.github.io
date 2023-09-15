@@ -104,11 +104,14 @@
           </div>
         </div>
         <div id="main-div">
+            <a onclick="openKovaBiller()" style="float:right; padding:0; text-decoration: none; margin-right: 4px; font-size: 20px;"><i class="fa-solid fa-file-invoice"></i>&nbsp;Kova Biller</a>
+          <br>
             <br>
           <input class="slds-input slds-align_absolute-center" type="tel" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
           <br>
           <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="slds-button  slds-align_absolute-center slds-button_brand">Open WhatsApp</button>
           <br>
+          
           <div class="slds-tabs_default">
             <ul class="slds-tabs_default__nav" role="tablist">
               <li class="slds-tabs_default__item slds-is-active" title="Biller" onclick="openBiller();" role="presentation">
@@ -890,6 +893,10 @@
         });
         
     }    
+    
+    function openKovaBiller(){
+        window.open('KovaBiller.html','_blank');
+    }
       </script>
   </body>
   </html>
