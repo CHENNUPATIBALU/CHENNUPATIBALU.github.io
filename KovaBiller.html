@@ -6,9 +6,22 @@
     <title>Billing App</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@salesforce-ux/design-system@2.11.5/assets/styles/salesforce-lightning-design-system.min.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        #data{
+            display: none;
+        }
+        #error{
+            color: red;
+            text-align: center;
+        }
+    </style>
   </head>
   <body>
-    <div class="slds-container slds-p-around_large">
+      <div id="error">
+          
+      </div>
+      <div id="data">
+          <div class="slds-container slds-p-around_large">
       <h2 class="slds-text-heading_large">Billing App</h2>
       <div class="slds-tabs_default">
         <ul class="slds-tabs_default__nav" role="tablist">
@@ -72,6 +85,48 @@
               <button type="button" id="sendWhatsAppButton" class="slds-button slds-button_brand">Send via WhatsApp</button>
             </div>
           </div>
+          <script>
+        function getURLParameters() {
+        var params = {};
+        var urlParams = window.location.search.substring(1).split('&');
+        for (var i = 0; i < urlParams.length; i++) {
+            var param = urlParams[i].split('=');
+            params[param[0]] = decodeURIComponent(param[1]);
+        }
+        return params;
+        }
+        var urlParams = getURLParameters();
+        console.log(JSON.stringify(urlParams));
+        if(urlParams!=null && Object.keys(urlParams).length>0){
+            var uuid = urlParams.code;
+            console.log(uuid);
+            if(uuid!=null){
+                var parsedUuid = parseUUID(uuid);
+                if(uuid==parsedUuid){
+                    document.getElementById('data').style.display = 'block';
+                }else{
+                    document.getElementById('data').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').innerHTML = "You are unauthorised to open this website";
+                }
+            }else{
+                document.getElementById('data').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').innerHTML = "You are unauthorised to open this website";
+            }
+        }
+        
+        function parseUUID(uuid) {
+          return {
+    time_low: parseInt(uuid.substr(0, 8), 16),
+    time_mid: parseInt(uuid.substr(9, 4), 16),
+    time_hi_and_version: parseInt(uuid.substr(14, 4), 16),
+    clock_seq_hi_and_reserved: parseInt(uuid.substr(19, 2), 16),
+    clock_seq_low: parseInt(uuid.substr(21, 2), 16),
+    node: uuid.substr(24, 12),
+          };
+        }
+    </script>
           <script>
             document.getElementById('addButton').addEventListener('click', function() {
               var companyName = document.getElementById('companyName').value;
@@ -460,5 +515,6 @@
           });
         });
     </script>
+      </div>
   </body>
 </html>
