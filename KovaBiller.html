@@ -102,7 +102,7 @@
             var urlParams = getURLParameters();
         if(urlParams!=null && Object.keys(urlParams).length>0){
             var uuid = urlParams.code;
-            if(uuid!=null){
+            if(uuid!=null && uuid.length>0){
                 var parsedUuid = parseUUID(uuid);
                 if(uuid.includes(parsedUuid.node)){
                     document.getElementById('data').style.display = 'block';
