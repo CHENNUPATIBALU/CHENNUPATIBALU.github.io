@@ -1,754 +1,498 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biller</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.21.1/styles/salesforce-lightning-design-system.min.css">
+    <title>Billing App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@salesforce-ux/design-system@2.11.5/assets/styles/salesforce-lightning-design-system.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-      #main-div {
-        display: none;
-      }
-
-      body {
-        font-family: 'Roboto', sans-serif;
-      }
-
-      #result-div,
-      #bill-form {
-        width: max-content;
-        margin: 0 auto;
-        display: block;
-      }
-
-      #bill-form {
-        margin-top: 20px;
-      }
-
-      #whatsapp-send,
-      .bill-btn {
-        margin: 0 auto;
-        display: block;
-        cursor: pointer;
-        padding: 10px;
-        background-color: white;
-        border: 0.5px solid black;
-        border-radius: 4px;
-        box-shadow: 1px 0.5px 0.5px 0.5px grey;
-      }
-
-      #result {
-        margin-top: 20px;
-        padding: 5px;
-        border: 2px solid grey;
-        border-radius: 8px;
-      }
-
-      .fa-whatsapp {
-        font-size: 30px;
-      }
-
-      input[type=number] {
-        padding: 10px;
-      }
-
-      #manage-div {
-        padding: 10px;
-        /*display: none;*/
-      }
-
-      .biller-div {
-        margin: 5px;
-      }
-
-      #login-progress, #get-bill-div {
-        display: none;
-      }
-      
-      input[type=email], input[type=password]{
-          width: 20em;
-          padding: 10px;
-      }
-      
-      td{
-          width: 100%;
-          margin: 4px
-      }
+        #data{
+            display: none;
+        }
+        #error{
+            color: red;
+            text-align: center;
+        }
     </style>
   </head>
   <body>
-    <div>
-      <div style="z-index:0">
-        <div id="login-div" style="width: max-content;" class="slds-align_absolute-center">
-          <h3 style="text-align: center;" class="slds-text-heading_large">Login</h3>
-          <br>
-          <div class="slds-form-element">
-            <label class="slds-form-element__label" for="email">
-              <abbr class="slds-required" title="required">* </abbr>Email </label>
-            <div class="slds-form-element__control">
-              <input type="email" id="email" required="" class="slds-input" />
-            </div>
-          </div>
-          <div style="width: max-content; margin: 0 auto;">
-            <div class="slds-form-element">
-              <label class="slds-form-element__label" for="password">
-                <abbr class="slds-required" title="required">* </abbr>Password </label>
-              <div class="slds-form-element__control">
-                <input type="password" id="password" required="" class="slds-input" />
-              </div>
-            </div>
-            <button class="slds-button slds-button_brand" onclick="login();" style="width: max-content; margin: 0 auto; display: block; margin-top: 5px;" id="login-btn">Login</button>
-            <br>
-            <progress class="slds-align_absolute-center" id="login-progress"></progress>
-          </div>
-        </div>
-        <div id="main-div">
-            <form onsubmit="openKovaBiller()">
-                <button class="slds-button" style="float:right; padding:0; text-decoration: none; margin-right: 4px; font-size: 20px;"><i class="fa-solid fa-file-invoice"></i>&nbsp;Kova Biller</button> 
-            </form>
-          <br>
-            <br>
-          <input class="slds-input slds-align_absolute-center" type="tel" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
-          <br>
-          <button onclick="openWhatsapp(document.getElementById('number').value);" style="height:30px;" class="slds-button  slds-align_absolute-center slds-button_brand">Open WhatsApp</button>
-          <br>
+      <div id="error">
           
-          <div class="slds-tabs_default">
-            <ul class="slds-tabs_default__nav" role="tablist">
-              <li class="slds-tabs_default__item slds-is-active" title="Biller" onclick="openBiller();" role="presentation">
-                <a class="slds-tabs_default__link" href="#" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-default-1" id="tab-default-1__item" onclick="openBiller();">Biller</a>
-              </li>
-              <li class="slds-tabs_default__item" title="Manage" role="presentation" onclick="openManage();">
-                <a class="slds-tabs_default__link" href="#" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item" onclick="openManage();">Manage</a>
-              </li>
-            </ul>
-            <div id="tab-default-1" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
-              <div class="biller-div">
-                <div class="slds-form-element">
-                  <div class="slds-form-element__control">
-                    <label class="slds-form-element__label">Select Dairy</label>
-                    <div class="slds-select_container">
-                      <select class="slds-select" id="milk-seller-list"></select>
-                    </div>
-                  </div>
-                </div>
-                <label class="slds-form-element__label">Select Date</label>
-                <table>
-                  <tr>
-                    <td>
-                      <input class="slds-input" type="date" id="date">
-                    </td>
-                    <td>
-                      <div class="slds-form-element">
-                        <div class="slds-form-element__control">
-                          <div class="slds-select_container">
-                            <select class="slds-select" id="am-pm">
-                              <option value="AM">AM</option>
-                              <option value="PM">PM</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-                <label class="slds-form-element__label">Enter weights</label>
-                <textarea onkeyup="handleWeights();" class="slds-textarea" id="weights"></textarea>
-                <div class="slds-form-element__help">
-                    <div style="display: inline">
-                        <span id="cans-count" class="slds-text_heading-small"></span>
-                        <a onclick="shuffleWeights()" style="float:right; padding:0; text-decoration: none;"><i class="fa fa-shuffle"></i>&nbsp;Shuffle Weights</a>
-                    </div>
-                </div>
-                <br><br>
-                <div class="slds-grid slds-wrap">
-                    <div class="slds-size_1-of-3">
-                        <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small">
-                            <label class="slds-form-element__label">Cans Count</label>
-                            <input type="number" class="slds-input" style="text-align:center; font-size: 25px;" disabled id="canCount">
-                        </div>
-                         </div>
-                          <div class="slds-size_1-of-3">
-                        <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small">
-                            <label class="slds-form-element__label">Can weight</label>
-                            <input type="number" onkeyup="handleCanWeight();" class="slds-input" id="canWeight">
-                        </div>
-                      </div>
-                  <div class="slds-size_1-of-3">
-                      <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small">
-                            <label class="slds-form-element__label">Total weight</label>
-                            <input type="number" onkeyup="handleTotalCanWeight();" class="slds-input" id="can-weight">
-                       </div>
-                  </div>
-                </div>
-                <label class="slds-form-element__label">Enter Milk rate</label>
-                <input class="slds-input" type="number" id="milk-price" aria-invalid="true">
-                <br>
-                <br>
-                <button onclick="calculateResult();" class="slds-button slds-button_brand slds-align_absolute-center">Submit</button>
-              </div>
-            </div>
-            <div id="tab-default-2" class="slds-tabs_default__content" role="tabpanel" aria-labelledby="tab-default-2__item">
-                <div style="margin: 5px;">
-                    <table>
-                        <tr>
-                            <td>
-                                <input placeholder="Select date" type ="date" id="pilldate" class="slds-input">
-                            </td>
-                            <td>
-                                <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="addPill(document.getElementById('pilldate').value,'')">+</button>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-    
-                <div id="dates-form" style="display:none; margin: 5px;" class="slds-pill_container"></div>
-    
-                <div>
-                    <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="getTotalBill()">Compute Bill</button>
-                </div>
-              <div id="date-range-div">
-                <p>
-                  <b>Start date</b>: <input type="date" style="margin: 4px;" class="slds-input" id="start-date">
-                </p>
-                <p>
-                  <b>End date</b>: <input type="date" style="margin: 4px;" class="slds-input" id="end-date">
-                </p>
-                <br>
-                <button class="slds-button slds-button_neutral slds-align_absolute-center" onclick="getDetails();" style="width: 60px; padding: 5px; font-size: large;">Get</button>
-                <progress id="get-progress" style="display:none;"></progress>
-              </div>
-              <br>
-              <div style="border: 1px solid grey; margin: 5px; padding: 4px; border-radius: 4px;" id="manage-details-div">
-                <p>
-                  <b>No. of days: </b>
-                  <span id="days_work_done"></span>
-                </p>
-                <p>
-                  <b>Total Cans: </b>
-                  <span id="total-cans"></span>
-                </p>
-                <p>
-                  <b>Total Milk (in litres): </b>
-                  <span id="total-cans-weight"></span>
-                </p>
-                <p>
-                  <b>Total Amount spent: </b>
-                  <span id="total-amount"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-              <div id="get-bill-div" style="width: max-content; margin: 0 auto; text-align: center;">
-              <p>
-                <b>Select bill date</b>
-              </p>
-              <input class="slds-input" type="date" id="bill-date-input">
-              <br>
-              <br>
-              <button onclick="getBill(document.getElementById('bill-date-input').value);" class="slds-button slds-button_brand">Get Bill</button>
-              <br>
-              <progress id="get-bill-progress" style="display: none;"></progress>
-            </div>
-            <div style="display: none;" id="result-div">
-            <div id="result"></div>
-            </br>
-            <button id="whatsapp-send" style="background-color: aliceblue;">
-              <i class="fa-brands fa-whatsapp"></i>
-            </button>
-          </div>
-          </div>
-        </div>        
-        <div>
-        
-        </div>
-            <section id="modal" style="display:none" role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open">
-                <div style="z-index:2; position: absolute; left: 50%; top:50%; right: 50%">
-                    <div id="spinner" class="demo-only" style="height:6rem;position:relative;display:none;">
-                        <div class="slds-spinner_container">
-                            <div role="status" class="slds-spinner slds-spinner_medium">
-                                <span class="slds-assistive-text">Loading</span>
-                            <div class="slds-spinner__dot-a"></div>
-                            <div class="slds-spinner__dot-b"></div>
-                            <p style="transform: translate(-32%, -50%) rotate(-90deg);width: 320px;text-align: center; color: white" id="spinnerText"></p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <div id="backdrop" style="display: none;" class="slds-backdrop slds-backdrop_open" role="presentation"></div>
-        
-        </div>
-        <div id="demo" style="display:none;"></div>
       </div>
-      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+      <div id="data">
+          <div class="slds-container slds-p-around_large">
+      <h2 class="slds-text-heading_large">Billing App</h2>
+      <div class="slds-tabs_default">
+        <ul class="slds-tabs_default__nav" role="tablist">
+          <li class="slds-tabs_default__item slds-is-active" title="Bill" role="presentation" onclick="navigateToBill()" id="nav-1">
+            <a class="slds-tabs_default__link" href="#" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item">Bill</a>
+          </li>
+          <li class="slds-tabs_default__item" title="Invoice" role="presentation" onclick="navigateToInvoice()" id="nav-2">
+            <a class="slds-tabs_default__link" href="#" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item">Invoice</a>
+          </li>
+        </ul>
+        <div id="tab-default-1" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
+          <div class="slds-scope slds-m-around_small">
+            <form id="companyForm" class="slds-form">
+              <div class="slds-form-element slds-is-required">
+                <label class="slds-form-element__label" for="companyName">Bakery Name:</label>
+                <div class="slds-form-element__control">
+                  <select id="companyName" required class="slds-select">
+                    
+                  </select>
+                </div>
+              </div>
+              <div class="slds-form-element slds-is-required">
+                <label class="slds-form-element__label" for="rate">Rate (₹ per kg):</label>
+                <div class="slds-form-element__control">
+                  <input type="number" id="rate" required class="slds-input">
+                </div>
+              </div>
+              <div class="slds-form-element slds-is-required">
+                <label class="slds-form-element__label" for="date">Date:</label>
+                <div class="slds-form-element__control">
+                  <input type="date" id="date" required class="slds-input">
+                </div>
+              </div>
+              <div class="slds-form-element slds-is-required">
+                <label class="slds-form-element__label" for="weight">Weight (kg):</label>
+                <div class="slds-form-element__control">
+                  <input type="number" id="weight" required class="slds-input">
+                </div>
+              </div>
+              <div class="slds-m-top_medium">
+                <button type="button" id="addButton" class="slds-button slds-button_brand">Add Data</button>
+              </div>
+            </form>
+            <h2 class="slds-text-heading_medium slds-m-top_large">Company Data Table</h2>
+            <table id="dataTable" class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped">
+              <thead>
+                <tr>
+                  <th class="slds-text-title_caps slds-hide">Company Name</th>
+                  <th class="slds-text-title_caps">Date</th>
+                  <th class="slds-text-title_caps">Weight (kg)</th>
+                  <th class="slds-text-title_caps slds-hide">Rate (₹ per kg)</th>
+                  <th class="slds-text-title_caps">Edit</th>
+                  <th class="slds-text-title_caps">Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Data rows will be added here -->
+              </tbody>
+            </table>
+            <div class="slds-m-top_large">
+              <button type="button" id="sendWhatsAppButton" class="slds-button slds-button_brand">Send via WhatsApp</button>
+            </div>
+          </div>
+          <script>
+        function getURLParameters() {
+        var params = {};
+        var urlParams = window.location.search.substring(1).split('&');
+        for (var i = 0; i < urlParams.length; i++) {
+            var param = urlParams[i].split('=');
+            params[param[0]] = decodeURIComponent(param[1]);
+        }
+        return params;
+        }
+        
+        var intervalId = setInterval(repeat, 1000);
+        
+        function repeat(){
+            var urlParams = getURLParameters();
+        if(urlParams!=null && Object.keys(urlParams).length>0){
+            var uuid = urlParams.code;
+            if(uuid!=null){
+                var parsedUuid = parseUUID(uuid);
+                if(uuid.includes(parsedUuid.node)){
+                    document.getElementById('data').style.display = 'block';
+                }else{
+                    document.getElementById('data').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').innerHTML = "You are unauthorised to open this website";
+                }
+            }else{
+                document.getElementById('data').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').innerHTML = "You are unauthorised to open this website";
+            }
+        }
+        }
+        
+        function parseUUID(uuid) {
+          return {
+    time_low: parseInt(uuid.substr(0, 8), 16),
+    time_mid: parseInt(uuid.substr(9, 4), 16),
+    time_hi_and_version: parseInt(uuid.substr(14, 4), 16),
+    clock_seq_hi_and_reserved: parseInt(uuid.substr(19, 2), 16),
+    clock_seq_low: parseInt(uuid.substr(21, 2), 16),
+    node: uuid.substr(24, 12),
+          };
+        }
+    </script>
+          <script>
+            document.getElementById('addButton').addEventListener('click', function() {
+              var companyName = document.getElementById('companyName').value;
+              var date = new Date(document.getElementById('date').value);
+              var weight = document.getElementById('weight').value;
+              var rate = document.getElementById('rate').value;
+              // Validation here (e.g., check if fields are not empty)
+              var table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+              var newRow = table.insertRow(table.rows.length);
+              var cell1 = newRow.insertCell(0);
+              cell1.classList.add('slds-hide');
+              var cell2 = newRow.insertCell(1);
+              var cell3 = newRow.insertCell(2);
+              cell3.classList.add('slds-hide');
+              var cell4 = newRow.insertCell(3);
+              var cell5 = newRow.insertCell(4);
+              var cell6 = newRow.insertCell(5);
+              cell1.innerHTML = companyName;
+              
+              cell2.innerHTML = date.getDate()+'-'+(date.getMonth()+1)+'-'+date.getFullYear();
+              cell3.innerHTML = parseFloat(weight).toFixed(3);
+              cell4.innerHTML = rate;
+              cell5.innerHTML = '<button onclick = "editRow(this)"> Edit </button>';
+              cell6.innerHTML = '<button onclick = "deleteRow(this)"> Delete </button>';
+              // Clear the form fields
+              document.getElementById('date').value = '';
+              document.getElementById('weight').value = '';
+            });
+
+            function editRow(button) {
+              var row = button.parentNode.parentNode;
+              var cells = row.getElementsByTagName('td');
+              document.getElementById('companyName').value = cells[0].innerHTML;
+              document.getElementById('date').value = cells[1].innerHTML;
+              document.getElementById('weight').value = cells[2].innerHTML;
+              document.getElementById('rate').value = cells[3].innerHTML;
+              row.remove();
+            }
+
+            function deleteRow(button) {
+              var row = button.parentNode.parentNode;
+              row.remove();
+            }
+            document.getElementById('sendWhatsAppButton').addEventListener('click', function() {
+              var companyName = document.getElementById('companyName').value;
+              var table = document.getElementById('dataTable');
+              var tableData = [];
+              var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+              for (var i = 0; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var rowData = [];
+                for (var j = 0; j < cells.length - 2; j++) { // Exclude Edit and Delete columns
+                  rowData.push(cells[j].innerHTML);
+                }
+                console.log(rowData)
+                tableData.push(rowData);
+                // console.log(tableData);
+              }
+              console.log(tableData);
+              var billData = [];
+              let perKgRate = parseFloat('0');
+              let totalWeight = parseFloat('0');
+              tableData.forEach(row => {
+                var bill = row[1] + " --> " + row[2];
+                totalWeight += parseFloat(row[2]);
+                perKgRate = parseInt(row[3]);
+                billData.push(bill);
+              });
+              console.log(billData)
+              console.log(totalWeight)
+              // Create a WhatsApp message with the table data
+              var message = "*" + tableData[0][0] + "*\n\n" + billData.join('\n');
+              var line = "\t\t\t\t\t\t\t\t—————————";
+              message += "\n" + line + "\n\t\t\t\t\t\t\t\t\t" + totalWeight.toFixed(3) + " × " + perKgRate;
+              let totalBill = totalWeight * perKgRate;
+              message += "\n" + line + "\n\t\t\t\t\t\t\t\t\t\t*₹ " + Intl.NumberFormat('en-IN').format(totalBill) + "/-*";
+              console.log('Total Bill=', totalBill);
+              console.log('Message=\n' + message)
+              // Customize the recipient's phone number (replace with the actual number)
+              var recipientPhoneNumber = '9963615191';
+              // Generate the WhatsApp link with the message
+              var whatsappLink = 'whatsapp://send?text=' + encodeURIComponent(message);
+              console.log(whatsappLink);
+              // Open the WhatsApp link in a new tab
+              //window.open(whatsappLink, '_blank');
+            });
+          </script>
+        </div>
+        <div id="tab-default-2" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-default-2__item">
+          <form>
+            <div class="slds-form_stacked">
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="billNumber">Bill Number</label>
+                <div class="slds-form-element__control">
+                  <input type="text" id="billNumber" class="slds-input" placeholder="Enter Bill Number">
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="customerName">Customer Name</label>
+                <div class="slds-form-element__control">
+                  <input type="text" id="customerName" class="slds-input" placeholder="Enter Customer Name">
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="productDate">Bill Date</label>
+                <div class="slds-form-element__control">
+                  <input type="date" id="productDate" class="slds-input" placeholder="Select Product Date">
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="phoneNumber">Phone Number</label>
+                <div class="slds-form-element__control">
+                  <input type="tel" id="phoneNumber" class="slds-input" placeholder="Enter Phone Number">
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="productName">Product Name</label>
+                <div class="slds-form-element__control">
+                  <input type="text" id="productName" class="slds-input" placeholder="Enter Product Name">
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="quantity">Quantity</label>
+                <div class="slds-form-element__control">
+                  <input type="number" id="quantity" class="slds-input" placeholder="Enter Quantity">
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="pricePerUnit">Price Per Unit</label>
+                <div class="slds-form-element__control">
+                  <input type="number" id="pricePerUnit" class="slds-input" placeholder="Enter Price Per Unit">
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="totalPrice">Total Price</label>
+                <div class="slds-form-element__control">
+                  <input type="number" id="totalPrice" class="slds-input" readonly>
+                </div>
+              </div>
+              <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                  <button type="button" class="slds-button slds-button_brand" onclick="calculateTotal()">Calculate Total</button>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div class="slds-box">
+            <h3 class="slds-section-title--divider">Products Table</h3>
+            <table class="slds-table slds-table_bordered slds-table_resizable-cols slds-table_fixed-layout">
+              <thead>
+                <tr>
+                  <th scope="col">Product Name</th>
+                  <th scope="col">Product Date</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Price Per Unit</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productTableBody">
+                <!-- Table rows will be dynamically added here -->
+              </tbody>
+            </table>
+          </div>
+          <button class="slds-button slds-button_success" onclick="addProductToLocalstorage()">Add Product</button>
+          <button class="slds-button slds-button_success" onclick="printTable()">Print</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
-      <script>
-          initDB();
-          
-        //getLocation();
-        function getLocation(){
-            showSpinner(true, 'Please wait. We are setting up the things')
-            var req = new XMLHttpRequest();
-        req.open('GET','http://ipinfo.io',true);
-        req.send();
-        req.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-            var htmlText = req.responseText;
-            document.getElementById('demo').innerHTML = htmlText;
-            var json = JSON.parse(document.getElementById('__NEXT_DATA__').innerHTML);
-            if(json!=null){
-                var locReq = new XMLHttpRequest();
- locReq.open('GET',"https://ipapi.co/"+json.props.pageProps.userIp+"/json",true);
-                locReq.send();
-                locReq.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        var locationData = locReq.responseText;
-                        //console.log(JSON.stringify(locationData));
-                        sessionStorage.setItem('user_location',locationData);
-                        var db = firebase.firestore();
-                        
-                        const date = new Date();
+    <script>
+      function navigateToInvoice() {
+        var billTab = document.getElementById('tab-default-1');
+        var invoiceTab = document.getElementById('tab-default-2');
+        var nav1 = document.getElementById('nav-1');
+        var nav2 = document.getElementById('nav-2');
+        billTab.classList.remove('slds-show');
+        billTab.classList.add('slds-hide');
+        invoiceTab.classList.add('slds-show');
+        invoiceTab.classList.remove('slds-hide');
+        nav1.classList.remove('slds-is-active');
+        nav2.classList.add('slds-is-active');
+      }
 
-                        let day = date.getDate();
-                        let month = date.getMonth() + 1;
-                        let year = date.getFullYear();
-
-                        let currentDate = `${day}-${month}-${year} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}`;
-                        console.log(currentDate); // "17-6-2022"
-          db.collection("Milk Biller Logins").doc(currentDate).set(
-             JSON.parse(sessionStorage.getItem('user_location'))
-          ).then(() => {
-            showSpinner(false,'');
-            console.log("User location captured!");
-          }).catch((error) => {
-          showSpinner(false,'');
-            console.error("Error writing document: ", error);
-          });
-                    }
-                 }
-            }
-            }}
+      function navigateToBill() {
+        var billTab = document.getElementById('tab-default-1');
+        var invoiceTab = document.getElementById('tab-default-2');
+        var nav1 = document.getElementById('nav-1');
+        var nav2 = document.getElementById('nav-2');
+        billTab.classList.add('slds-show');
+        billTab.classList.remove('slds-hide');
+        invoiceTab.classList.remove('slds-show');
+        invoiceTab.classList.add('slds-hide');
+        nav2.classList.remove('slds-is-active');
+        nav1.classList.add('slds-is-active');
+      }
+      // Function to calculate total and add row to the table
+      function calculateTotal() {
+        const productName = document.getElementById('productName').value.trim();
+        const productDate = document.getElementById('productDate').value.trim();
+        const quantity = parseFloat(document.getElementById('quantity').value);
+        const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value);
+        // Validate input data
+        if (productName === '' || productDate === '' || isNaN(quantity) || isNaN(pricePerUnit) || quantity <= 0 || pricePerUnit <= 0) {
+          alert('Please fill in valid product details before adding.');
+          return;
         }
-        function shuffleArray(array) {
-           for(var i=array.length-1;i>0;i--){ 
-               var j = Math.floor(Math.random() * (i + 1));
-                  
-               var temp = array[i];
-               array[i] = array[j];
-               array[j] = temp;
-           }
-          return array;
-        }
-        
-        function shuffleWeights(){
-            var data = document.getElementById('weights');
-            if(data.value.length>0){
-                var weights = data.value.split('\n');
-                var shuffledArray = shuffleArray(weights);
-                data.value = shuffledArray.join('\n');
-            }
-        }
-        function showSpinner(show,msg){
-            var backdrop = document.getElementById('backdrop');
-            var spinner = document.getElementById('spinner');
-            var modal = document.getElementById('modal');
-            if(show){
-                backdrop.style.display = 'block';
-                spinner.style.display = 'block';
-                modal.style.display = 'block';
-                document.getElementById('spinnerText').innerText = msg;
-            } else {
-                backdrop.style.display = 'none';
-                spinner.style.display = 'none';
-                modal.style.display = 'none';
-            }
-        }
-        
-        function handleTotalCanWeight(){
-            
-        }
-        
-        function handleCanWeight(){
-            var canCount = document.getElementById('canCount');
-            var canWeight = document.getElementById('canWeight');
-            var totalWeight = (!isNaN(canCount.value) && !isNaN(canWeight.value))?(parseFloat(canCount.value)*parseFloat(canWeight.value)).toFixed(3):0;
-            var totalWeightInput = document.getElementById('can-weight');
-            totalWeightInput.value = (!isNaN(totalWeight)?totalWeight:0);
-        }
-        
-        function handleWeights(){
-            var data = document.getElementById('weights').value;
-            var cansCount = document.getElementById('cans-count');
-            var canCount = document.getElementById('canCount');
-            var cansLen = data.split('\n');
-            var count = 0;
-            cansLen.forEach(can=>{
-                if(can!=''){
-                    count++;
-                }
-            });
-            cansCount.innerText = 'Total Cans: '+count;
-            canCount.value = count;
-        }
-
-        function getBill(reqDate) {
-            if(reqDate!=null && reqDate!=''){
-                showSpinner(true,'Getting Bill');
-          db.collection("Milk Biller").doc(reqDate).get().then((doc) => {
-              
-            if (doc.exists) {
-                
-                var dairyName = doc.data().Milk_Partner;
-                var date = doc.data().Date;
-                var am_pm = doc.data().AM_PM;
-                var weights = doc.data().Weights;
-                var weightsString = "";
-                var weightsString1 = "";
-                let bill = getTotalWeight(weights);
-                var canWeight = doc.data().Can_Weight;
-                let weight = parseFloat(bill - canWeight).toFixed(3);
-
-                for(let i=0;i<weights.length;i++){
-                    weightsString += weights[i] + "%0A";
-                    weightsString1 += weights[i] + "  </br>";
-                }
-                
-                var totalAmount = doc.data().Total_Bill;
-                var milk_rate = doc.data().Milk_Rate_Per_Litre;
-                var result_wa = createWhatsappString(dairyName, new Date(date).toLocaleDateString("en-GB"), am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate);
-                var result_div = createDivString(dairyName, new Date(date).toLocaleDateString("en-GB"), am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount);
-                document.getElementById('result-div').style.display = 'block';
-                document.getElementById('result').innerHTML = result_div;
-                document.getElementById('whatsapp-send').addEventListener('click', () => {
-                    window.location.href = createWhatsAppLink(result_wa);
-                    
-                });
-                showSpinner(false,'');
-            } 
-            else {
-                showSpinner(false,'');
-                alert("No bill found");
-            }
-          }).catch((error) => {
-              showSpinner(false,'');
-            console.log("Error getting document:", error);
-          });
-            }else{
-                alert('Select Bill date');
-            }
-        }
-        if (sessionStorage.getItem('login-status') == null || sessionStorage.getItem('login-status') == false) {
-          showLoginDiv(true);
-          showMainDiv(false);
+        // Calculate total price
+        const totalPrice = (quantity * pricePerUnit).toFixed(2);
+        // Create a new row in the table for the entered product details
+        const tableBody = document.getElementById('productTableBody');
+        const newRow = tableBody.insertRow(-1);
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        const cell3 = newRow.insertCell(2);
+        const cell4 = newRow.insertCell(3);
+        const cell5 = newRow.insertCell(4);
+        const cell6 = newRow.insertCell(5);
+        cell1.innerHTML = productName;
+        cell2.innerHTML = productDate;
+        cell3.innerHTML = quantity;
+        cell4.innerHTML = pricePerUnit.toFixed(2);
+        cell5.innerHTML = totalPrice;
+        // Create a "Delete" button in the new row
+        const deleteButton = document.createElement("button");
+        deleteButton.innerHTML = "Delete";
+        deleteButton.className = "slds-button slds-button_neutral";
+        deleteButton.onclick = function() {
+          deleteRow(newRow);
+        };
+        cell6.appendChild(deleteButton);
+        // Clear input fields
+        document.getElementById('productName').value = '';
+        document.getElementById('quantity').value = '';
+        document.getElementById('pricePerUnit').value = '';
+        document.getElementById('totalPrice').value = '';
+        const billNumber = document.getElementById('billNumber').value.trim();
+        var date = productDate.getDate()+'-'+(productDate.getMonth()+1)+'-'+productDate.getFullYear();
+        const product = {
+          billTo: document.getElementById('customerName').value.trim(),
+          name: productName,
+          date: date,
+          quantity: quantity,
+          pricePerUnit: pricePerUnit,
+          totalPrice: totalPrice,
+          billNumber: billNumber
+        };
+        // Get existing products from localStorage or create an empty array
+        const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+        // Add the new product to the array
+        existingProducts.push(product);
+        // Store the updated products array in localStorage
+        localStorage.setItem('products', JSON.stringify(existingProducts));
+      }
+      // Function to delete a row from the table
+      function deleteRow(row) {
+        const tableBody = document.getElementById('productTableBody');
+        const rowIndex = row.rowIndex;
+        alert(rowIndex)
+        if (rowIndex >= 0 && rowIndex < tableBody.rows.length) {
+          tableBody.deleteRow(rowIndex);
         } else {
-          showLoginDiv(false);
-          showMainDiv(true);
+          console.error('Invalid row index:', rowIndex);
         }
-        
-        function validateLogin(){
-            var loginValidation = [];
-            
-            var email = document.getElementById('email');
-            var password = document.getElementById('password');
-            
-            if(email.value == '' || email.value==null){
-                email.classList.add('slds-has-error');
-                loginValidation.push(false);
-            }else{
-                email.classList.remove('slds-has-error');
-                loginValidation.push(true);
-            }
-            
-            if(password.value=='' || password.value==null){
-                password.classList.add('slds-has-error');
-                loginValidation.push(false);
-            }else{
-                password.classList.remove('slds-has-error');
-                loginValidation.push(true);
-            }
-            
-            var validation = (loginValidation.indexOf(false)==-1)?true:false;
-          return validation;
+      }
+      // Function to add product to localStorage
+      function addProductToLocalstorage() {
+        const productName = document.getElementById('productName').value.trim();
+        const productDate = document.getElementById('productDate').value.trim();
+        const quantity = parseFloat(document.getElementById('quantity').value);
+        const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value);
+        const billNumber = document.getElementById('billNumber').value.trim(); // Capture Bill Number
+        // Validate input data
+        if (productName === '' || productDate === '' || isNaN(quantity) || isNaN(pricePerUnit) || quantity <= 0 || pricePerUnit <= 0 || billNumber === '') {
+          alert('Please fill in valid product details before adding.');
+          return;
         }
-
-        function login() {
-             
-          email = document.getElementById('email');
-          password = document.getElementById('password');
-          //alert(password); 
-          
-          if(validateLogin()){
-              document.getElementById('login-btn').disabled=true; 
-             showSpinner(true,'Signing in'); firebase.auth().signInWithEmailAndPassword(email.value, password.value).then((userCredential) => {
-            // Signed in
-            var user = userCredential.user;
-            
-           showSpinner(false,''); document.getElementById('login-btn').disabled=true;
-            showLoginDiv(false);
-            
-            showMainDiv(true);
-            
-            //alert(JSON.stringify(user))
-            sessionStorage.setItem('login-status', true);
-            var db = firebase.firestore();
-            db.collection("Milk Biller").orderBy("Date", "desc").limit(1).get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            var latest = doc.data().Date.split("-");
-            var dd = latest[2];
-            var mm = latest[1];
-            var yyyy = latest[0];
-            today = yyyy + "-" + mm + "-" + dd;
-            getBill(today,false);
-            getLocation();
-          });
+        // Calculate total price
+        const totalPrice = (quantity * pricePerUnit).toFixed(2);
+        var date = productDate.getDate()+'-'+(productDate.getMonth()+1)+'-'+productDate.getFullYear();
+        // Create a product object
+        const product = {
+          billTo: document.getElementById('customerName').value.trim(),
+          name: productName,
+          date: date,
+          quantity: quantity,
+          pricePerUnit: pricePerUnit,
+          totalPrice: totalPrice,
+          billNumber: billNumber
+        };
+        // Get existing products from localStorage or create an empty array
+        const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+        // Add the new product to the array
+        existingProducts.push(product);
+        // Store the updated products array in localStorage
+        localStorage.setItem('products', JSON.stringify(existingProducts));
+        // Clear input fields
+        document.getElementById('productName').value = '';
+        document.getElementById('productDate').value = '';
+        document.getElementById('quantity').value = '';
+        document.getElementById('pricePerUnit').value = '';
+        document.getElementById('totalPrice').value = '';
+        document.getElementById('billNumber').value = ''; // Clear Bill Number input field
+        // Display a success message
+        alert('Product added successfully.');
+      }
+      // Function to load products from localStorage and populate the table
+      function loadProductsFromLocalStorage() {
+        const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+        // Populate the table with existing products
+        const tableBody = document.getElementById('productTableBody');
+        existingProducts.forEach((product) => {
+          const newRow = tableBody.insertRow(-1);
+          const cell1 = newRow.insertCell(0);
+          const cell2 = newRow.insertCell(1);
+          const cell3 = newRow.insertCell(2);
+          const cell4 = newRow.insertCell(3);
+          const cell5 = newRow.insertCell(4);
+          const cell6 = newRow.insertCell(5);
+          cell1.innerHTML = product.name;
+          cell2.innerHTML = product.date;
+          cell3.innerHTML = product.quantity;
+          cell4.innerHTML = product.pricePerUnit.toFixed(2);
+          cell5.innerHTML = product.totalPrice;
+          // Create a "Delete" button in the row
+          const deleteButton = document.createElement("button");
+          deleteButton.innerHTML = "Delete";
+          deleteButton.className = "slds-button slds-button_neutral";
+          deleteButton.onclick = function() {
+            deleteRow(newRow);
+          };
+          cell6.appendChild(deleteButton);
         });
-            // ...
-          }).catch((error) => {
-          document.getElementById('login-btn').disabled=false;
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log(error);
-            showSpinner(false,'');
-            alert('You are not allowed to sign in. Kindly contact SVRMP about this error.');
+      }
+      // Call the function to load products from localStorage when the page loads
+      loadProductsFromLocalStorage();
+      // Function to print the table
+      function printTable() {
+        // Get the table data from localStorage
+        const products = JSON.parse(localStorage.getItem('products'));
+        // Check if there are products to print
+        if (products && products.length > 0) {
+          // Construct the URL parameters with table data
+          const urlParams = new URLSearchParams();
+          products.forEach((product, index) => {
+            urlParams.append(`product${index + 1}`, JSON.stringify(product));
           });
-          }
-          
-        }
-
-        function showLoginDiv(show) {
-          if (show) {
-            document.getElementById('login-div').style.display = "block";
+          // Open the "Bill.html" page with URL parameters
+          const printWindow = window.open('Bill.html', '_blank');
+          if (printWindow) {
+            printWindow.focus();
           } else {
-            document.getElementById('login-div').style.display = "none";
+            alert('Please allow pop-ups for printing.');
           }
+        } else {
+          alert('No products to print.');
         }
-
-        function showMainDiv(show) {
-          if (show) {
-            openBiller();
-             document.getElementById('main-div').style.display = "block";
-          } else {
-            document.getElementById('main-div').style.display = "none";
-          }
-        }
-        no_of_days = parseInt(0);
-        amount_spent = parseInt(0);
-        total_cans = parseInt(0);
-        total_cans_weight = parseInt(0);
-
-        function getDetails() {
-          var db = firebase.firestore();
-          var startDate = document.getElementById('start-date').value;
-          var endDate = document.getElementById('end-date').value;
-          if (startDate != null && endDate != null) {
-            showSpinner(true,'Please wait. Getting details');
-            db.collection("Milk Biller").where("Date", ">=", startDate).where("Date", "<=", endDate).get().then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                no_of_days++;
-                amount = doc.data().Total_Bill.split(',');
-                amount_spent += parseInt(amount[0] + '' + amount[1]);
-                total_cans += doc.data().Cans_Count;
-                total_cans_weight += parseFloat(doc.data().Bill_Without_Can_Weight) - parseFloat(doc.data().Can_Weight);
-              });
-              
-              document.getElementById('days_work_done').innerText = no_of_days;
-              document.getElementById('total-cans').innerText = total_cans;
-              document.getElementById('total-cans-weight').innerText = Intl.NumberFormat('en-IN').format(total_cans_weight);
-              document.getElementById('total-amount').innerText = "₹ " + Intl.NumberFormat('en-IN').format(amount_spent) + "/-";
-              no_of_days = parseInt(0);
-              amount_spent = parseInt(0);
-              total_cans = parseInt(0);
-              total_cans_weight = parseInt(0);
-              showSpinner(false,'');
-            }).catch((error) => {
-              console.log("Error getting documents: ", error);
-              showSpinner(false,'');
-            });
-          }
-        }
-
-        function openBiller() {
-          document.getElementById('tab-default-1').style.display = 'block';
-          document.getElementById('tab-default-2').style.display = 'none';
-          document.getElementsByClassName('slds-tabs_default__item')[1].classList.remove('slds-is-active');
-          document.getElementsByClassName('slds-tabs_default__item')[0].classList.add('slds-is-active');
-          document.getElementById('get-bill-div').style.display = "none";
-        }
-
-        function openManage() {
-          document.getElementById('tab-default-1').style.display = 'none';
-          document.getElementsByClassName('slds-tabs_default__item')[0].classList.remove('slds-is-active');
-          document.getElementsByClassName('slds-tabs_default__item')[1].classList.add('slds-is-active');
-          document.getElementById('tab-default-2').style.display = 'block';
-          document.getElementById('get-bill-div').style.display = "block";
-        }
-
-        function openWhatsapp(number) {
-          window.location.href = "https://api.whatsapp.com/send?phone=+91" + number;
-        }
-        if (localStorage.getItem("result_div") != null && localStorage.getItem("wa") != null) {
-          var div = document.getElementById('result');
-          document.getElementById("result-div").style.display = 'block';
-          div.innerHTML = localStorage.getItem("result_div");
-          div.style.display = 'block';
-          document.getElementById("whatsapp-send").addEventListener('click', () => {
-            window.location.href = createWhatsAppLink(localStorage.getItem("wa"));
-          });
-        }
-        var textarea = document.getElementById('weights');
-        var heightLimit = 200;
-        textarea.oninput = function() {
-          textarea.style.height = "";
-          textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
-        }
-
-        
-        function validateSubmit(){
-            var noErrorsBeforeSubmit = [];
-            var weights = document.getElementById('weights');
-          var result = document.getElementById('result');
-          let milk_rate =document.getElementById('milk-price');
-          let canWeight =document.getElementById('can-weight');
-          
-          if(!weights.value.length>0){
-              weights.classList.add('slds-has-error');
-              noErrorsBeforeSubmit.push(false);
-          }else{
-              weights.classList.remove('slds-has-error');
-              noErrorsBeforeSubmit.push(true);
-          }
-          
-          if(milk_rate.value=='' || milk_rate.value==0 || milk_rate.value==null){
-              milk_rate.classList.add('slds-has-error');
-              noErrorsBeforeSubmit.push(false);
-          }else{
-              milk_rate.classList.remove('slds-has-error');
-              noErrorsBeforeSubmit.push(true);
-          }
-          
-          if(canWeight.value=='' || canWeight.value==0 || canWeight.value==null){
-              canWeight.classList.add('slds-has-error');
-              noErrorsBeforeSubmit.push(false);
-          }else{
-              canWeight.classList.remove('slds-has-error');
-              noErrorsBeforeSubmit.push(true);
-          }
-          
-          
-          var validation = (noErrorsBeforeSubmit.indexOf(false)==-1)?true:false;
-          return validation;
-          
-        }
-        async function calculateResult() {
-          var weights = document.getElementById('weights');
-          var result = document.getElementById('result');
-          
-          var resultText = weights.value;
-          
-          if(validateSubmit()){
-              showSpinner(true,'Computing the bill');          
-              await sleep(2);
-              result.innerHTML = alignBill(resultText);
-          document.getElementById('result-div').style.display = 'block';
-          }
-        }
-
-        function computeTotal(quantities) {
-          var weights = quantities.split('\n');
-          let sum = 0;
-          for (let i = 0; i < weights.length && weights[i] != ""; i++) {
-            sum += parseFloat(weights[i]);
-          }
-          return sum.toFixed(3);
-        }
-
-        function getTotalWeight(weights) {
-          let sum = 0;
-          for (let i = 0; i < weights.length; i++) {
-            sum += parseFloat(weights[i]);
-          }
-          return sum.toFixed(3);
-        }
-
-        function alignBill(quantities) {
-          let bill = computeTotal(quantities);
-          let milk_rate = parseFloat(document.getElementById('milk-price').value);
-          let canWeight = parseFloat(document.getElementById('can-weight').value).toFixed(3);
-          var dairyName = document.getElementById('milk-seller-list').value;
-          let weight = parseFloat(bill - canWeight).toFixed(3);
-          let totalAmount = parseFloat(weight * milk_rate).toFixed(0);
-          totalAmount = Intl.NumberFormat('en-IN').format(totalAmount);
-          var date1 = document.getElementById('date').value;
-          var date = new Date(date1).toLocaleDateString("en-GB");
-          var am_pm = document.getElementById('am-pm').value;
-          var weights = quantities.split('\n');
-          var weightsString = "";
-          var weightsString1 = "";
-          for (let i = 0; i < weights.length; i++) {
-            weightsString += weights[i] + "%0A";
-            weightsString1 += weights[i] + " </br>";
-          }
-          
-          var result_wa = createWhatsappString(dairyName, date, am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate);
-          var result_div = createDivString(dairyName, date, am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount);
-          addToDB(date1, dairyName, weights, bill, canWeight, milk_rate, totalAmount, am_pm);
-          addToLS(result_div, result_wa);
-          document.getElementById('whatsapp-send').addEventListener('click', () => {
-            window.location.href = createWhatsAppLink(result_wa);
-            
-          });
-          return result_div;
-        }
-
-        function createWhatsappString(dairyName, date, am_pm, weightsString, canWeight, weight, totalAmount, bill, milk_rate) {
-          return "*" + dairyName + "*%0A*Date*: " + date + " _(" + am_pm + ")_%0A%0A" + weightsString + "————————%0A*" + bill + "*%0A" + "– _" + canWeight + "_ (Empty Cans)%0A——————————%0A_*" + weight + "*_ × " + milk_rate + "%0A———————%0A*₹ " + totalAmount + "/-*";
-        }
-
-        function createDivString(dairyName, date, am_pm, weightsString1, bill, milk_rate, canWeight, weight, totalAmount) {
-          return "<b>"+dairyName+"</b></br> <b> Date </b>: "+date+" <i> ("+am_pm+") </i> </br> </br>"+weightsString1+"-------------  </br> <b> "+bill+" </b> </br>"+"–   <i> "+canWeight+" </b> <i> (Empty Cans) </i> </br>-------------  </br>"+weight+" × "+milk_rate+"  </br>-------------  </br> <b> ₹"+totalAmount+" / - </b>";
-        }
-        
-        function sleep(ms) {       
-            return new Promise(resolve => setTimeout(resolve, ms*1000));    
-        }
-
-        function createWhatsAppLink(message) {
-          return "whatsapp://send?text=" + message;
-        }
-
-        function addToLS(div, wa) {
-          localStorage.setItem("result_div", div);
-          localStorage.setItem("wa", wa);
-        }
-
-        function addToDB(date, milkpartner, weights, bill, canweight, milkrate, totalBill, am_pm) {
-            showSpinner(true,'Finalising the Bill');
-           
-          var db = firebase.firestore();
-          db.collection("Milk Biller").doc(date).set({
-            Date: date,
-            AM_PM: am_pm,
-            Milk_Partner: milkpartner,
-            Weights: weights,
-            Cans_Count: weights.length,
-            Bill_Without_Can_Weight: bill,
-            Can_Weight: canweight,
-            Milk_Rate_Per_Litre: milkrate,
-            Total_Bill: totalBill
-          }).then(() => {
-          showSpinner(false,'');
-            console.log("Document successfully written!");
-          }).catch((error) => {
-          showSpinner(false,'');
-            console.error("Error writing document: ", error);
-          });
-        }
-
-        function initDB() {
+      }
+      
+      function initDB() {
           const firebaseConfig = {
             apiKey: "AIzaSyABU3wrmKgVumYiW6MVBWn5CFg20k2LkiE",
             authDomain: "srivenkataramanamilk-products.firebaseapp.com",
@@ -761,152 +505,19 @@
           };
           firebase.initializeApp(firebaseConfig);
         }
-        // initDB();
+        
+        initDB();
+        
         var db = firebase.firestore();
-        db.collection("Milk Sellers").get().then((querySnapshot) => {
+        db.collection("Kova Sellers").get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             var option = document.createElement('option');
-            option.value = doc.data().Seller_Name + ", " + doc.data().Seller_Place;
+            option.value = doc.data().Name + ", " + doc.data().Location;
             option.innerText = doc.id;
-            document.getElementById('milk-seller-list').appendChild(option);
+            document.getElementById('companyName').appendChild(option);
           });
         });
-        
-        var date = new Date();
-        var day = date.getDate();
-        var month = date.getMonth() + 1;
-        var year = date.getFullYear();
-        if (month < 10) month = "0" + month;
-        if (day < 10) day = "0" + day;
-        var today = year + "-" + month + "-" + day;
-        document.getElementById("date").value = today;
-        //showMainDiv(true)     
-        
-        var pilldates = {};
-    
-    function addPill(date,amount){
-        var form = document.getElementById('dates-form');
-        if(date!=null && date!=''){
-            form.style.display = 'block';
-            var pill = document.createElement('span');
-            pill.setAttribute('id',date);
-            pill.classList.add('slds-pill');
-            pill.classList.add('slds-pill_link');
-            var pillLink = document.createElement('a');
-            pillLink.classList.add('slds-pill__action');
-            pillLink.setAttribute('title',date);
-            var pillLabel = document.createElement('span');
-            pillLabel.classList.add('slds-pill__label');
-            pillLabel.innerText = date;
-            pillLink.appendChild(pillLabel);
-            pill.appendChild(pillLink);
-            var pillRemoveBtn = document.createElement('button');
-            pillRemoveBtn.classList.add('slds-button');
-            pillRemoveBtn.classList.add('slds-button_icon');
-            pillRemoveBtn.classList.add('slds-button_icon');
-            pillRemoveBtn.classList.add('slds-pill__remove');
-        
-            var pillBtnIcon = document.createElement('i');
-            pillBtnIcon.classList.add('fas');
-            pillBtnIcon.classList.add('fa-close');
-            pillRemoveBtn.appendChild(pillBtnIcon);
-            pill.appendChild(pillRemoveBtn);
-            console.log(JSON.stringify(form.childNodes))
-            if(Object.keys(pilldates).length!=0 && Object.keys(pilldates).indexOf(date)!=-1){
-              //  pill = null;
-                //pilldates[date] = {}; 
-                alert(date+' is already selected');
-            }else{
-                pilldates[date] = amount;
-                form.appendChild(pill);
-                
-            }
-            console.log('Add',JSON.stringify(pilldates))
-            pillRemoveBtn.addEventListener('click',function(){
-                form.removeChild(pill);
-                delete pilldates[date];
-                if(Object.keys(pilldates).length==0){
-                    form.style.display = 'none';
-                } console.log('Remove',JSON.stringify(pilldates))
-            });
-        }
-    }
-    
-    var bill = '';
-    var formattedBill = '';
-    function getTotalBill(){
-        bill = '';
-        formattedBill = '';
-        var totalBill = parseFloat('0');
-        
-        showSpinner(true,'Getting Bill for selected dates');
-        let i=parseInt('0');
-        Object.keys(pilldates).forEach(d=>{
-            
-          db.collection("Milk Biller").doc(d).get().then((doc) => {
-              i++;
-            if (doc.exists) {
-                
-                var dairyName = doc.data().Milk_Partner;
-                var date = doc.data().Date;
-                
-                var totalAmount = doc.data().Total_Bill;
-                
-                pilldates[d] = totalAmount;
-                
-                var pillamount = pilldates[d].split(',');
-                var amount = pillamount[0]+''+pillamount[1]; totalBill+=parseFloat(amount);
-                formattedBill = Intl.NumberFormat('en-IN').format(totalBill);
-                bill+=d+' --> ₹ '+pilldates[d]+'/-%0A';    
-                
-                var waStr = '';
-                
-               console.log(bill); 
-               if(i==Object.keys(pilldates).length){
-                console.log('Bill',bill,'Index:',i)
-                    bill+='          ———————————%0A';
-         console.log(JSON.stringify(pilldates),formattedBill);
-        
-                bill+='      Balance = *₹ '+formattedBill+'/-*';
-                    var confirmSend=confirm('Are you willing to send this bill on WhatsApp?');
-                    if(confirmSend){
-                        showSpinner(false,'');
-                        window.location.href = createWhatsAppLink(bill);
-                        
-                    }else{
-                        showSpinner(false,'');
-                    }
-                }
-            } 
-            else {
-                showSpinner(false,'');
-                delete pilldates[d];
-                var form = document.getElementById('dates-form');
-                var pill = document.getElementById(d);
-                form.removeChild(pill);
-                //alert("No bill found for "+d);
-            }
-          }).catch((error) => {
-              showSpinner(false,'');
-              console.log("Error getting document:", error);
-          });
-          console.log(bill,i)
-          
-        });
-        
-    }    
-    
-    function openKovaBiller(){
-        var id = uuid();
-        console.log(id);
-        window.open('Biller.html?code='+encodeURIComponent(id),'_blank');
-    }
-    
-    function uuid() {
-       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { var r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8; return v.toString(16); });
-    }
-      </script>
+    </script>
+      </div>
   </body>
-  </html>
-  
-  
+</html>
