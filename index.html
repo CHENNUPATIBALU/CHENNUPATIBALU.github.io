@@ -104,7 +104,9 @@
           </div>
         </div>
         <div id="main-div">
-            <a onclick="openKovaBiller()" style="float:right; padding:0; text-decoration: none; margin-right: 4px; font-size: 20px;"><i class="fa-solid fa-file-invoice"></i>&nbsp;Kova Biller</a>
+            <form onsubmit="openKovaBiller()">
+                <button class="slds-button" style="float:right; padding:0; text-decoration: none; margin-right: 4px; font-size: 20px;"><i class="fa-solid fa-file-invoice"></i>&nbsp;Kova Biller</button> 
+            </form>
           <br>
             <br>
           <input class="slds-input slds-align_absolute-center" type="tel" id="number" placeholder="Enter mobile number" style="width:inherit;height:40px;">
@@ -895,9 +897,16 @@
     }    
     
     function openKovaBiller(){
-        window.open('KovaBiller.html','_blank');
+        var id = uuid();
+        console.log(id);
+        window.open('Biller.html?code='+encodeURIComponent(id),'_blank');
+    }
+    
+    function uuid() {
+       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { var r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8; return v.toString(16); });
     }
       </script>
   </body>
   </html>
+
   
