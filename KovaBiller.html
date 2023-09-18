@@ -294,7 +294,7 @@
               </tbody>
             </table>
           </div>
-          <button class="slds-button slds-button_success" onclick="addProductToLocalstorage()">Add Product</button>
+          
           <button class="slds-button slds-button_success" onclick="printTable()">Print</button>
         </div>
       </div>
@@ -351,17 +351,27 @@
         const cell4 = newRow.insertCell(3);
         const cell5 = newRow.insertCell(4);
         const cell6 = newRow.insertCell(5);
+        const cell7 = newRow.insertCell(6);
         cell1.innerHTML = productName;
         cell2.innerHTML = productDate;
         cell3.innerHTML = quantity;
         cell4.innerHTML = pricePerUnit.toFixed(2);
         cell5.innerHTML = totalPrice;
+        cell7.innerHTML = Math.floor(Math.random() * 100)+'';
+        cell7.classList.add('slds-hide');
         // Create a "Delete" button in the new row
         const deleteButton = document.createElement("button");
         deleteButton.innerHTML = "Delete";
         deleteButton.className = "slds-button slds-button_neutral";
         deleteButton.onclick = function() {
-          deleteRow(newRow);
+          /*var row = this.parentNode.parentNode;
+          console.log(JSON.stringify(row))*/
+          //row.remove();
+          newRow.remove();
+          var products = JSON.parse(localStorage.getItem('products'));
+          var productsAfterDelete = products.splice(products.indexOf(products.find(p=>p.id==cell7.innerHTML)),1);
+          console.log('Products after delete=', productsAfterDelete);
+          localStorage.setItem('products',JSON.stringify(productsAfterDelete));
         };
         cell6.appendChild(deleteButton);
         // Clear input fields
@@ -370,7 +380,7 @@
         document.getElementById('pricePerUnit').value = '';
         document.getElementById('totalPrice').value = '';
         const billNumber = document.getElementById('billNumber').value.trim();
-        var date = productDate.getDate()+'-'+(productDate.getMonth()+1)+'-'+productDate.getFullYear();
+        var date = new Date(productDate).getDate()+'-'+(new Date(productDate).getMonth()+1)+'-'+new Date(productDate).getFullYear();
         const product = {
           billTo: document.getElementById('customerName').value.trim(),
           name: productName,
@@ -378,7 +388,8 @@
           quantity: quantity,
           pricePerUnit: pricePerUnit,
           totalPrice: totalPrice,
-          billNumber: billNumber
+          billNumber: billNumber,
+          id: cell7.innerHTML
         };
         // Get existing products from localStorage or create an empty array
         const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
@@ -387,17 +398,7 @@
         // Store the updated products array in localStorage
         localStorage.setItem('products', JSON.stringify(existingProducts));
       }
-      // Function to delete a row from the table
-      function deleteRow(row) {
-        const tableBody = document.getElementById('productTableBody');
-        const rowIndex = row.rowIndex;
-        alert(rowIndex)
-        if (rowIndex >= 0 && rowIndex < tableBody.rows.length) {
-          tableBody.deleteRow(rowIndex);
-        } else {
-          console.error('Invalid row index:', rowIndex);
-        }
-      }
+     
       // Function to add product to localStorage
       function addProductToLocalstorage() {
         const productName = document.getElementById('productName').value.trim();
