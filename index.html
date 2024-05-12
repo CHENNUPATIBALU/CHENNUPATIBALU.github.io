@@ -848,7 +848,9 @@
             if (doc.exists) {
                 
                 var dairyName = doc.data().Milk_Partner;
-                var date = doc.data().Date;
+                var dbDate = doc.data().Date.split('-');
+                var date = dbDate[2]+'-'+dbDate[1]+'-'+dbDate[0];
+                console.log(date);
                 
                 var totalAmount = doc.data().Total_Bill;
                 
@@ -857,7 +859,7 @@
                 var pillamount = pilldates[d].split(',');
                 var amount = pillamount[0]+''+pillamount[1]; totalBill+=parseFloat(amount);
                 formattedBill = Intl.NumberFormat('en-IN').format(totalBill);
-                bill+=d+' --> ₹ '+pilldates[d]+'/-%0A';    
+                bill+=date+' --> ₹ '+pilldates[d]+'/-%0A';    
                 
                 var waStr = '';
                 
