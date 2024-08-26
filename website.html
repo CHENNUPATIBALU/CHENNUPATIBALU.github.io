@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sri Venkata Ramana Milk Products</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.21.1/styles/salesforce-lightning-design-system.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+        }
+        .header {
+            width: 100%;
+            background-color: #f8f8f8;
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .info img {
+            margin-left: 15px;
+            margin-right: 10px;
+        }
+        .company-name {
+            text-align: center;
+        }
+        .content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Carousel styles */
+        .carousel {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .carousel-slide .heading {
+            text-align: center;
+            font-weight: bold;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .carousel-buttons {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+        .carousel-button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        /* Floating Action Buttons */
+        .fab {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .fab-call {
+            background-color: #25d366;
+            bottom: 20px;
+            right: 20px;
+        }
+        .fab-whatsapp {
+            background-color: #128c7e;
+            bottom: 90px;
+            right: 20px;
+        }
+        .fab i {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="info">
+            <img src="https://res.cloudinary.com/chennupati-balu/image/upload/v1640759470/SriVenkataRamanaMilkProducts/assets/web-logo.png" width="100" alt="SVRMP">
+            <div class="company-name">
+                <span class="slds-text-heading_large">Sri Venkata Ramana Milk Products</span>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="carousel">
+            <div class="carousel-track">
+                <!-- Slide 1 -->
+                <div class="carousel-slide current-slide">
+                    <img src="https://res.cloudinary.com/chennupati-balu/image/upload/v1643359573/SriVenkataRamanaMilkProducts/assets/White_Kalakand.png" alt="White Kalakand">
+                    <div class="slds-text-heading_medium heading">White Kalakand</div>
+                    <p>A popular Indian sweet treat, White Kalakand is a creamy, milky delight made with:</p>
+                    <ul class="slds-list_dotted">
+                        <li>Fresh milk</li>
+                        <li>Sugar</li>
+                        <li>Chenna (Indian cottage cheese)</li>
+                        <li>Ghee (clarified butter)</li>
+                        <li>Cardamom powder (for flavor)</li>
+                    </ul>
+                    </br>
+                    <h3 style="font-weight: bold;">Taste & Flavor:</h3>
+                    <p>White Kalakand boasts a:</p>
+                    <ul class="slds-list_dotted">
+                        <li>Rich, creamy texture</li>
+                        <li>Sweet, milky flavor</li>
+                        <li>Subtle tanginess from the chenna</li>
+                        <li>Hint of cardamom's warm, aromatic spice</li>
+                        <li>Smooth, velvety mouthfeel</li>
+                    </ul>
+                    <p>This sweet treat is often served chilled, making it a refreshing dessert or snack perfect for any occasion!</p>
+                </div>
+                <!-- Slide 2 -->
+                <div class="carousel-slide">
+                    <img src="https://res.cloudinary.com/chennupati-balu/image/upload/v1724599734/SriVenkataRamanaMilkProducts/assets/cchppfhnyzjluljjc2ih.png" alt="Brown Kalakand">
+                    <div class="slds-text-heading_medium heading">Brown Kalakand</div>
+                    <p>A roasted variation of the classic White Kalakand, Brown Kalakand is a rich, caramelized delight made by roasting White Kalakand to perfection, bringing out a deeper flavor and texture.</p>
+                    </br>
+                    <h3 style="font-weight: bold;">Taste & Flavor:</h3>
+                    <p>Brown Kalakand boasts a:</p>
+                    <ul class="slds-list_dotted">
+                        <li>Deep, caramelized flavor</li>
+                        <li>Nutty, roasted taste</li>
+                        <li>Denser, creamier texture than White Kalakand</li>
+                        <li>Hint of burnt sugar, adding a smoky note</li>
+                        <li>A sweet, indulgent treat with a velvety mouthfeel</li>
+                    </ul>
+                    <p>The roasting process gives Brown Kalakand a distinctive flavor and texture, setting it apart from its white counterpart. It's a perfect treat for those who love a deeper, more caramelized taste!</p>
+                </div>
+            </div>
+            <div class="carousel-buttons">
+                <button class="carousel-button" id="prevBtn"><i class="fas fa-arrow-left"></i></button>
+                <button class="carousel-button" id="nextBtn"><i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <a href="tel:+919985353247" class="fab fab-call" title="Call Now">
+        <i class="fas fa-phone"></i>
+    </a>
+
+    <a href="https://wa.me/+919985353247" class="fab fab-whatsapp" title="WhatsApp Now">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        const track = document.querySelector('.carousel-track');
+        const slides = Array.from(track.children);
+        const nextButton = document.querySelector('#nextBtn');
+        const prevButton = document.querySelector('#prevBtn');
+        const slideWidth = slides[0].getBoundingClientRect().width;
+        let startX, endX;
+
+        // Arrange slides next to each other
+        slides.forEach((slide, index) => {
+            slide.style.left = `${slideWidth * index}px`;
+        });
+
+        const moveToSlide = (track, currentSlide, targetSlide) => {
+            track.style.transform = `translateX(-${targetSlide.style.left})`;
+            currentSlide.classList.remove('current-slide');
+            targetSlide.classList.add('current-slide');
+        };
+
+        prevButton.addEventListener('click', () => {
+            const currentSlide = track.querySelector('.current-slide');
+            const prevSlide = currentSlide.previousElementSibling || slides[slides.length - 1];
+            moveToSlide(track, currentSlide, prevSlide);
+        });
+
+        nextButton.addEventListener('click', () => {
+            const currentSlide = track.querySelector('.current-slide');
+            const nextSlide = currentSlide.nextElementSibling || slides[0];
+            moveToSlide(track, currentSlide, nextSlide);
+        });
+
+        // Swipe functionality
+        track.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+
+        track.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].clientX;
+            if (startX > endX) {
+                const currentSlide = track.querySelector('.current-slide');
+                const nextSlide = currentSlide.nextElementSibling || slides[0];
+                moveToSlide(track, currentSlide, nextSlide);
+            } else if (startX < endX) {
+                const currentSlide = track.querySelector('.current-slide');
+                const prevSlide = currentSlide.previousElementSibling || slides[slides.length - 1];
+                moveToSlide(track, currentSlide, prevSlide);
+            }
+        });
+
+        // Set first slide as current
+        slides[0].classList.add('current-slide');
+    </script>
+</body>
+</html>
+
